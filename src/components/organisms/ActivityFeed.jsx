@@ -53,12 +53,15 @@ const ActivityFeed = ({ activities = [] }) => {
               </div>
               
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between mb-1">
+<div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-medium text-gray-900 truncate">
                     {activity.Summary}
                   </p>
                   <span className="text-xs text-gray-500 ml-2">
-                    {format(new Date(activity.CreatedAt), "HH:mm")}
+                    {activity.CreatedAt && !isNaN(new Date(activity.CreatedAt)) 
+                      ? format(new Date(activity.CreatedAt), "HH:mm")
+                      : "N/A"
+                    }
                   </span>
                 </div>
                 
