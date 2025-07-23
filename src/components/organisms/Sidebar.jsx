@@ -1,7 +1,8 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import ApperIcon from "@/components/ApperIcon";
+import { AuthContext } from '../../App';
 
 const Sidebar = () => {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
@@ -47,10 +48,9 @@ const Sidebar = () => {
           </NavLink>
         ))}
       </nav>
-
-      {/* Footer */}
+{/* Footer */}
       <div className="p-4 border-t border-gray-200">
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4">
+        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 mb-3">
           <div className="flex items-center">
             <ApperIcon name="Zap" size={16} className="text-primary-600 mr-2" />
             <div>
@@ -59,9 +59,30 @@ const Sidebar = () => {
             </div>
           </div>
         </div>
+        <LogoutButton />
       </div>
     </div>
   );
+
+  const LogoutButton = () => {
+    const { logout } = React.useContext(AuthContext) || {};
+    
+    const handleLogout = () => {
+      if (logout) {
+        logout();
+      }
+    };
+    
+    return (
+      <button
+        onClick={handleLogout}
+        className="w-full flex items-center px-3 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-lg transition-all duration-200"
+      >
+        <ApperIcon name="LogOut" size={16} className="mr-3" />
+        Sign Out
+      </button>
+    );
+  };
 
   return (
     <>

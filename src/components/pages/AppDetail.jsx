@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
+import App from "@/App";
 import ApperIcon from "@/components/ApperIcon";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
@@ -94,12 +95,12 @@ const fetchComments = async () => {
       const id = parseInt(appId);
       if (isNaN(id)) return;
 
-      const commentData = {
-        AppId: id,
-        Comment: commentForm.comment.trim(),
-        SalesStatus: commentForm.salesStatus,
-        AuthorName: "Current User", // Replace with actual user
-        AuthorAvatar: "CU"
+const commentData = {
+        app_id: id,
+        comment: commentForm.comment.trim(),
+        sales_status: commentForm.salesStatus,
+        author_name: "Current User", // Replace with actual user
+        author_avatar: "CU"
       };
 
 if (editingComment) {
@@ -123,10 +124,10 @@ if (editingComment) {
   };
 
   const handleEditComment = (comment) => {
-    setEditingComment(comment);
+setEditingComment(comment);
     setCommentForm({
-      comment: comment.Comment,
-      salesStatus: comment.SalesStatus
+      comment: comment.comment,
+      salesStatus: comment.sales_status
     });
     setShowCommentModal(true);
   };
@@ -195,8 +196,8 @@ try {
           <ApperIcon name="ArrowLeft" size={16} />
           <span>Apps</span>
         </button>
-        <ApperIcon name="ChevronRight" size={16} />
-        <span className="text-gray-900 font-medium">{app.AppName}</span>
+<ApperIcon name="ChevronRight" size={16} />
+        <span className="text-gray-900 font-medium">{app.app_name}</span>
       </motion.div>
 
       {/* Header */}
@@ -207,32 +208,32 @@ try {
         className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
       >
         <div className="flex items-start justify-between">
-          <div className="flex-1">
+<div className="flex-1">
             <div className="flex items-center space-x-3 mb-4">
-              <h1 className="text-2xl font-bold text-gray-900">{app.AppName}</h1>
-              <Badge variant="secondary">{app.AppCategory}</Badge>
+              <h1 className="text-2xl font-bold text-gray-900">{app.app_name}</h1>
+              <Badge variant="secondary">{app.app_category}</Badge>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm">
               <div>
-                <span className="font-medium text-gray-500">App ID:</span>
-                <div className="font-mono text-gray-900">{app.CanvasAppId}</div>
+<span className="font-medium text-gray-500">App ID:</span>
+                <div className="font-mono text-gray-900">{app.canvas_app_id}</div>
               </div>
               <div>
                 <span className="font-medium text-gray-500">Status:</span>
                 <div className="mt-1">
-                  <StatusBadge status={app.LastChatAnalysisStatus} type="chatAnalysis" />
+                  <StatusBadge status={app.last_chat_analysis_status} type="chatAnalysis" />
                 </div>
               </div>
               <div>
                 <span className="font-medium text-gray-500">Database:</span>
                 <div className="flex items-center mt-1">
                   <ApperIcon
-                    name={app.IsDbConnected ? "CheckCircle" : "XCircle"}
+                    name={app.is_db_connected ? "CheckCircle" : "XCircle"}
                     size={16}
-                    className={app.IsDbConnected ? "text-green-500" : "text-red-500"}
+                    className={app.is_db_connected ? "text-green-500" : "text-red-500"}
                   />
-                  <span className={`ml-2 ${app.IsDbConnected ? "text-green-600" : "text-red-600"}`}>
-                    {app.IsDbConnected ? "Connected" : "Disconnected"}
+                  <span className={`ml-2 ${app.is_db_connected ? "text-green-600" : "text-red-600"}`}>
+                    {app.is_db_connected ? "Connected" : "Disconnected"}
                   </span>
                 </div>
               </div>
@@ -272,27 +273,29 @@ try {
             <ApperIcon name="BarChart3" size={20} className="mr-2" />
             Activity Statistics
           </h3>
-          <div className="space-y-4">
+<div className="space-y-4">
             <div className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
               <span className="text-gray-600">Total Messages</span>
               <span className="font-mono font-semibold text-gray-900">
-                {app.TotalMessages.toLocaleString()}
+                {app.total_messages.toLocaleString()}
               </span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
               <span className="text-gray-600">Last Activity</span>
               <span className="text-gray-900">
-                {format(new Date(app.LastMessageAt), "MMM dd, yyyy 'at' HH:mm")}
+                {format(new Date(app.last_message_at), "MMM dd, yyyy 'at' HH:mm")}
               </span>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
               <span className="text-gray-600">Created</span>
               <span className="text-gray-900">
-                {app.CreatedAt ? format(new Date(app.CreatedAt), "MMM dd, yyyy") : "N/A"}
+                {app.created_at ? format(new Date(app.created_at), "MMM dd, yyyy") : "N/A"}
               </span>
             </div>
           </div>
         </div>
+
+        {/* Technical Info */}
 
         {/* Technical Info */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
@@ -302,23 +305,23 @@ try {
           </h3>
           <div className="space-y-4">
             <div className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
-              <span className="text-gray-600">App Category</span>
-              <Badge variant="secondary">{app.AppCategory}</Badge>
+<span className="text-gray-600">App Category</span>
+              <Badge variant="secondary">{app.app_category}</Badge>
             </div>
             <div className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
               <span className="text-gray-600">Analysis Status</span>
-              <StatusBadge status={app.LastChatAnalysisStatus} type="chatAnalysis" />
+              <StatusBadge status={app.last_chat_analysis_status} type="chatAnalysis" />
             </div>
             <div className="flex justify-between items-center py-3 border-b border-gray-100 last:border-b-0">
               <span className="text-gray-600">Database Connection</span>
               <div className="flex items-center">
                 <ApperIcon
-                  name={app.IsDbConnected ? "CheckCircle" : "XCircle"}
+                  name={app.is_db_connected ? "CheckCircle" : "XCircle"}
                   size={16}
-                  className={app.IsDbConnected ? "text-green-500" : "text-red-500"}
+                  className={app.is_db_connected ? "text-green-500" : "text-red-500"}
                 />
-                <span className={`ml-2 ${app.IsDbConnected ? "text-green-600" : "text-red-600"}`}>
-                  {app.IsDbConnected ? "Connected" : "Disconnected"}
+                <span className={`ml-2 ${app.is_db_connected ? "text-green-600" : "text-red-600"}`}>
+                  {app.is_db_connected ? "Connected" : "Disconnected"}
                 </span>
               </div>
             </div>
@@ -426,7 +429,7 @@ try {
                 <p>No comments yet. Add the first comment to track sales progress.</p>
               </div>
             ) : (
-              <div className="space-y-4">
+<div className="space-y-4">
                 {comments
                   .sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt))
                   .map((comment) => (
@@ -437,16 +440,16 @@ try {
                       <div className="flex items-start justify-between mb-3">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-primary-500 rounded-full flex items-center justify-center text-white text-xs font-medium">
-                            {comment.AuthorAvatar}
+                            {comment.author_avatar}
                           </div>
                           <div>
                             <div className="font-medium text-gray-900">
-                              {comment.AuthorName}
+                              {comment.author_name}
                             </div>
                             <div className="flex items-center space-x-2 text-sm text-gray-500">
-                              <StatusBadge status={comment.SalesStatus} type="sales" />
+                              <StatusBadge status={comment.sales_status} type="sales" />
                               <span>•</span>
-                              <span>{format(new Date(comment.CreatedAt), "MMM dd, yyyy 'at' h:mm a")}</span>
+                              <span>{format(new Date(comment.created_at), "MMM dd, yyyy 'at' h:mm a")}</span>
                             </div>
                           </div>
                         </div>
@@ -465,7 +468,7 @@ try {
                           </button>
                         </div>
                       </div>
-                      <p className="text-gray-700">{comment.Comment}</p>
+                      <p className="text-gray-700">{comment.comment}</p>
                     </div>
                   ))}
               </div>

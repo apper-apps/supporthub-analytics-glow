@@ -42,10 +42,10 @@ const Dashboard = () => {
   }, []);
 
   const calculateMetrics = () => {
-    const criticalStatuses = ["abandonment_risk", "completely_lost", "angry", "giving_up"];
-    const criticalIssues = logs.filter(log => criticalStatuses.includes(log.ChatAnalysisStatus)).length;
+const criticalStatuses = ["abandonment_risk", "completely_lost", "angry", "giving_up"];
+    const criticalIssues = logs.filter(log => criticalStatuses.includes(log.chat_analysis_status)).length;
     const activeSessions = apps.filter(app => {
-      const lastMessage = new Date(app.LastMessageAt);
+      const lastMessage = new Date(app.last_message_at);
       const now = new Date();
       const hoursDiff = (now - lastMessage) / (1000 * 60 * 60);
       return hoursDiff < 24;

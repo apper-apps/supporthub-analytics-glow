@@ -39,13 +39,13 @@ const fetchApps = async () => {
     try {
       setLoading(true);
       setError("");
-      const data = await appService.getAll();
+const data = await appService.getAll();
       setApps(data || []);
       setFilteredApps(data || []);
       
-      // Fetch user details for all apps
+      // Fetch user details for all apps using user_id lookup field
       if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(app => app.UserId).filter(Boolean))];
+        const userIds = [...new Set(data.map(app => app.user_id?.Id || app.user_id).filter(Boolean))];
         const users = await userDetailsService.getByIds(userIds);
         const userMap = {};
         users.forEach(user => {
@@ -70,25 +70,25 @@ const fetchApps = async () => {
     // Apply search filter
     if (searchTerm) {
       filtered = filtered.filter(app =>
-        app.AppName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.AppCategory.toLowerCase().includes(searchTerm.toLowerCase())
+        app.app_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        app.app_category.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Apply category filter
+// Apply category filter
     if (categoryFilter) {
-      filtered = filtered.filter(app => app.AppCategory === categoryFilter);
+      filtered = filtered.filter(app => app.app_category === categoryFilter);
     }
 
     // Apply status filter
     if (statusFilter) {
-      filtered = filtered.filter(app => app.LastChatAnalysisStatus === statusFilter);
+      filtered = filtered.filter(app => app.last_chat_analysis_status === statusFilter);
     }
 
     // Apply DB filter
     if (dbFilter) {
       filtered = filtered.filter(app => 
-        dbFilter === "connected" ? app.IsDbConnected : !app.IsDbConnected
+        dbFilter === "connected" ? app.is_db_connected : !app.is_db_connected
       );
     }
 
@@ -163,14 +163,14 @@ const handleViewLogs = (app) => {
     setModalError("");
 };
 
-  const handleSalesStatusChange = async (appId, newStatus) => {
+const handleSalesStatusChange = async (appId, newStatus) => {
     try {
-      await appService.update(appId, { SalesStatus: newStatus });
+      await appService.update(appId, { sales_status: newStatus });
       setApps(prev => prev.map(app => 
-        app.Id === appId ? { ...app, SalesStatus: newStatus } : app
+        app.Id === appId ? { ...app, sales_status: newStatus } : app
       ));
       setFilteredApps(prev => prev.map(app => 
-        app.Id === appId ? { ...app, SalesStatus: newStatus } : app
+        app.Id === appId ? { ...app, sales_status: newStatus } : app
       ));
     } catch (err) {
       console.error('Failed to update sales status:', err);
@@ -189,13 +189,13 @@ const handleViewLogs = (app) => {
     { value: "Contract review", label: "Contract Review" }
   ];
   
-  const getUniqueCategories = () => {
-    const categories = [...new Set(apps.map(app => app.AppCategory))];
+const getUniqueCategories = () => {
+    const categories = [...new Set(apps.map(app => app.app_category))];
     return categories.map(cat => ({ value: cat, label: cat }));
   };
 
   const getUniqueStatuses = () => {
-    const statuses = [...new Set(apps.map(app => app.LastChatAnalysisStatus))];
+    const statuses = [...new Set(apps.map(app => app.last_chat_analysis_status))];
     return statuses.map(status => ({ 
       value: status, 
       label: status.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) 
@@ -203,34 +203,35 @@ const handleViewLogs = (app) => {
   };
 const columns = [
     {
-      key: "AppName",
+      key: "app_name",
       label: "App Name",
       sortable: true,
       render: (value, row) => (
         <div>
           <div className="font-medium text-gray-900">{value}</div>
-          <div className="text-sm text-gray-500">{row.CanvasAppId}</div>
+          <div className="text-sm text-gray-500">{row.canvas_app_id}</div>
         </div>
       )
     },
     {
-      key: "UserId",
+      key: "user_id",
       label: "User",
       sortable: false,
       render: (value, row) => {
-        const user = usersMap[value];
+        const userId = value?.Id || value;
+        const user = usersMap[userId];
         if (!user) {
           return <span className="text-gray-400 text-sm">Loading...</span>;
         }
-        return (
+return (
           <div>
             <div className="font-medium text-gray-900">{user.Name}</div>
-            <div className="text-sm text-gray-500">{user.Email}</div>
+            <div className="text-sm text-gray-500">{user.email}</div>
             <div className="mt-1">
               <Badge 
-                variant={user.Plan === "Pro" ? "default" : user.Plan === "Enterprise" ? "default" : user.Plan === "Basic" ? "secondary" : "outline"}
+                variant={user.plan === "Pro" ? "default" : user.plan === "Enterprise" ? "default" : user.plan === "Basic" ? "secondary" : "outline"}
               >
-                {user.Plan}
+                {user.plan}
               </Badge>
             </div>
           </div>
@@ -238,7 +239,7 @@ const columns = [
       }
     },
     {
-      key: "AppCategory",
+      key: "app_category",
       label: "Category",
       sortable: true,
       render: (value) => (
@@ -246,15 +247,15 @@ const columns = [
       )
     },
     {
-      key: "LastChatAnalysisStatus",
+      key: "last_chat_analysis_status",
       label: "Status",
       sortable: true,
       render: (value) => (
         <StatusBadge status={value} type="chatAnalysis" />
       )
     },
-    {
-      key: "IsDbConnected",
+{
+      key: "is_db_connected",
       label: "DB Connected",
       render: (value) => (
         <div className="flex items-center">
@@ -270,7 +271,7 @@ const columns = [
       )
     },
     {
-      key: "TotalMessages",
+      key: "total_messages",
       label: "Messages",
       sortable: true,
       render: (value) => (
@@ -278,8 +279,8 @@ const columns = [
       )
     },
     {
-      key: "LastMessageAt",
-label: "Last Activity",
+      key: "last_message_at",
+      label: "Last Activity",
       sortable: true,
       render: (value) => (
         <span className="text-sm text-gray-500">
@@ -288,10 +289,10 @@ label: "Last Activity",
       )
     },
     {
-      key: "SalesStatus",
+key: "sales_status",
       label: "Sales Status",
       sortable: false,
-render: (value, row) => (
+      render: (value, row) => (
         <Select
           value={value || "No Contacted"}
           onChange={(e) => {
@@ -418,10 +419,10 @@ return (
             className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
+{/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <h2 className="text-xl font-semibold text-gray-900">
-                App Details - {selectedApp?.AppName}
+                App Details - {selectedApp?.app_name}
               </h2>
               <Button
                 variant="ghost"
@@ -463,26 +464,26 @@ return (
                           <span className="text-sm font-mono text-gray-900">{selectedApp?.Id}</span>
                         </div>
                         
-                        <div className="flex items-center justify-between">
+<div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Category</span>
-                          <Badge variant="secondary">{selectedApp?.AppCategory}</Badge>
+                          <Badge variant="secondary">{selectedApp?.app_category}</Badge>
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Canvas App ID</span>
-                          <span className="text-sm font-mono text-gray-700">{selectedApp?.CanvasAppId}</span>
+                          <span className="text-sm font-mono text-gray-700">{selectedApp?.canvas_app_id}</span>
                         </div>
                         
-                        <div className="flex items-center justify-between">
+<div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Database Connection</span>
                           <div className="flex items-center">
                             <ApperIcon
-                              name={selectedApp?.IsDbConnected ? "CheckCircle" : "XCircle"}
+                              name={selectedApp?.is_db_connected ? "CheckCircle" : "XCircle"}
                               size={16}
-                              className={selectedApp?.IsDbConnected ? "text-green-500" : "text-red-500"}
+                              className={selectedApp?.is_db_connected ? "text-green-500" : "text-red-500"}
                             />
-                            <span className={`ml-2 text-sm ${selectedApp?.IsDbConnected ? "text-green-600" : "text-red-600"}`}>
-                              {selectedApp?.IsDbConnected ? "Connected" : "Disconnected"}
+                            <span className={`ml-2 text-sm ${selectedApp?.is_db_connected ? "text-green-600" : "text-red-600"}`}>
+                              {selectedApp?.is_db_connected ? "Connected" : "Disconnected"}
                             </span>
                           </div>
                         </div>
@@ -497,28 +498,28 @@ return (
                           <div className="flex items-center">
                             <ApperIcon name="MessageSquare" size={16} className="text-gray-400 mr-2" />
                             <span className="text-sm font-medium text-gray-500">Total Messages</span>
-                          </div>
-                          <span className="text-sm font-mono text-gray-900">{selectedApp?.TotalMessages}</span>
+<span className="text-sm font-mono text-gray-900">{selectedApp?.total_messages}</span>
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Last Activity</span>
                           <span className="text-sm text-gray-700">
-                            {selectedApp?.LastMessageAt ? format(new Date(selectedApp.LastMessageAt), "MMM dd, yyyy HH:mm") : "N/A"}
+                            {selectedApp?.last_message_at ? format(new Date(selectedApp.last_message_at), "MMM dd, yyyy HH:mm") : "N/A"}
                           </span>
                         </div>
-                        
-                        <div className="flex items-center justify-between">
+                        </div>
+<div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Chat Status</span>
-                          <StatusBadge status={selectedApp?.LastChatAnalysisStatus} type="chatAnalysis" />
+                          <StatusBadge status={selectedApp?.last_chat_analysis_status} type="chatAnalysis" />
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Last AI Scan</span>
                           <span className="text-sm text-gray-700">
-                            {selectedApp?.LastAIScanAt ? format(new Date(selectedApp.LastAIScanAt), "MMM dd, yyyy") : "Never"}
+                            {selectedApp?.last_ai_scan_date ? format(new Date(selectedApp.last_ai_scan_date), "MMM dd, yyyy") : "Never"}
                           </span>
                         </div>
+                      </div>
                       </div>
                     </div>
                   </div>
@@ -532,38 +533,38 @@ return (
                           <div className="flex items-center">
                             <ApperIcon name="User" size={16} className="text-gray-400 mr-2" />
                             <span className="text-sm font-medium text-gray-500">Name</span>
-                          </div>
-                          <span className="text-sm text-gray-900">{userDetails?.Name || "Loading..."}</span>
+<span className="text-sm text-gray-900">{userDetails?.Name || "Loading..."}</span>
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Email</span>
                           <a
-                            href={`mailto:${userDetails?.Email}`}
+                            href={`mailto:${userDetails?.email}`}
                             className="text-sm text-primary-600 hover:text-primary-700 underline"
                           >
-                            {userDetails?.Email || "Loading..."}
+                            {userDetails?.email || "Loading..."}
                           </a>
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Plan</span>
                           <Badge 
-                            variant={userDetails?.Plan === "Pro" ? "default" : userDetails?.Plan === "Basic" ? "secondary" : "outline"}
+                            variant={userDetails?.plan === "Pro" ? "default" : userDetails?.plan === "Basic" ? "secondary" : "outline"}
                           >
-                            {userDetails?.Plan || "Loading..."}
+                            {userDetails?.plan || "Loading..."}
                           </Badge>
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Total Apps</span>
-                          <span className="text-sm font-mono text-gray-900">{userDetails?.TotalApps || "0"}</span>
+                          <span className="text-sm font-mono text-gray-900">{userDetails?.total_apps || "0"}</span>
                         </div>
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Credits Used</span>
-                          <span className="text-sm font-mono text-gray-900">{userDetails?.CreditsUsed || "0"}</span>
+                          <span className="text-sm font-mono text-gray-900">{userDetails?.total_credits_used || "0"}</span>
                         </div>
+                      </div>
                       </div>
                     </div>
 
@@ -571,23 +572,23 @@ return (
                     <div>
                       <h4 className="text-md font-semibold text-gray-900 mb-4">Timeline</h4>
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between">
+<div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Created</span>
                           <span className="text-sm text-gray-700">
-                            {selectedApp?.CreatedAt ? format(new Date(selectedApp.CreatedAt), "MMM dd, yyyy") : "N/A"}
+                            {selectedApp?.created_at ? format(new Date(selectedApp.created_at), "MMM dd, yyyy") : "N/A"}
                           </span>
                         </div>
                         
                         <div className="flex items-center justify-between">
-                          <span className="text-sm font-medium text-gray-500">Sales Status</span>
+<span className="text-sm font-medium text-gray-500">Sales Status</span>
                           <Badge 
                             variant={
-                              userDetails?.SalesStatus === "Demo Scheduled" ? "default" :
-                              userDetails?.SalesStatus === "Converted" ? "success" :
-                              userDetails?.SalesStatus === "Follow Up" ? "warning" : "secondary"
+                              selectedApp?.sales_status === "Demo Scheduled" ? "default" :
+                              selectedApp?.sales_status === "Closed Won" ? "success" :
+                              selectedApp?.sales_status === "Follow Up Schedule" ? "warning" : "secondary"
                             }
                           >
-                            {userDetails?.SalesStatus || "Unknown"}
+                            {selectedApp?.sales_status || "Unknown"}
                           </Badge>
                         </div>
                       </div>

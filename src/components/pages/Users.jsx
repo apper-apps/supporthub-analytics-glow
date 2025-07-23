@@ -43,16 +43,16 @@ const Users = () => {
 
     // Apply search filter
     if (searchTerm) {
-      filtered = filtered.filter(user =>
+filtered = filtered.filter(user =>
         user.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.Email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.CompanyID.toLowerCase().includes(searchTerm.toLowerCase())
+        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        user.company_id.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     // Apply plan filter
-    if (planFilter) {
-      filtered = filtered.filter(user => user.Plan === planFilter);
+if (planFilter) {
+      filtered = filtered.filter(user => user.plan === planFilter);
     }
 
     // Apply sorting
@@ -90,8 +90,8 @@ const Users = () => {
     navigate(`/users/${user.Id}`);
   };
 
-  const getUniquePlans = () => {
-    const plans = [...new Set(users.map(user => user.Plan))];
+const getUniquePlans = () => {
+    const plans = [...new Set(users.map(user => user.plan))];
     return plans.map(plan => ({ value: plan, label: plan }));
   };
 
@@ -122,23 +122,23 @@ const Users = () => {
               {value.split(" ").map(n => n[0]).join("").slice(0, 2)}
             </span>
           </div>
-          <div>
+<div>
             <div className="font-medium text-gray-900">{value}</div>
-            <div className="text-sm text-gray-500">{row.Email}</div>
+            <div className="text-sm text-gray-500">{row.email}</div>
           </div>
         </div>
       )
     },
-    {
-      key: "Plan",
+{
+      key: "plan",
       label: "Plan",
       sortable: true,
       render: (value) => (
         <Badge variant={getPlanVariant(value)}>{value}</Badge>
       )
     },
-    {
-      key: "TotalApps",
+{
+      key: "total_apps",
       label: "Total Apps",
       sortable: true,
       render: (value) => (
@@ -146,15 +146,15 @@ const Users = () => {
       )
     },
     {
-      key: "TotalCreditsUsed",
+      key: "total_credits_used",
       label: "Credits Used",
       sortable: true,
       render: (value) => (
         <span className="font-mono text-gray-600">{value.toLocaleString()}</span>
       )
     },
-    {
-      key: "CompanyID",
+{
+      key: "company_id",
       label: "Company ID",
       sortable: true,
       render: (value) => (
@@ -162,7 +162,7 @@ const Users = () => {
       )
     },
     {
-      key: "PlatformSignupDate",
+      key: "platform_signup_date",
       label: "Platform Signup",
       sortable: true,
       render: (value) => (
@@ -172,7 +172,7 @@ const Users = () => {
       )
     },
     {
-      key: "ApperSignupDate",
+      key: "apper_signup_date",
       label: "Apper Signup",
       sortable: true,
       render: (value) => (

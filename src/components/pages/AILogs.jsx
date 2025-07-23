@@ -48,31 +48,31 @@ const AILogs = () => {
     let filtered = [...logs];
 
     // Apply search filter
-    if (searchTerm) {
+if (searchTerm) {
       filtered = filtered.filter(log =>
-        log.Summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.ChatAnalysisStatus.toLowerCase().includes(searchTerm.toLowerCase())
+        log.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        log.chat_analysis_status.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
-    // Apply status filter
+// Apply status filter
     if (statusFilter) {
-      filtered = filtered.filter(log => log.ChatAnalysisStatus === statusFilter);
+      filtered = filtered.filter(log => log.chat_analysis_status === statusFilter);
     }
 
     // Apply app filter
     if (appFilter) {
       const appId = parseInt(appFilter);
-      filtered = filtered.filter(log => log.AppId === appId);
+      filtered = filtered.filter(log => log.app_id?.Id === appId || log.app_id === appId);
     }
 
     // Apply sorting
     if (sortColumn) {
       filtered.sort((a, b) => {
-        let aValue = a[sortColumn];
+let aValue = a[sortColumn];
         let bValue = b[sortColumn];
 
-        if (sortColumn === "CreatedAt") {
+        if (sortColumn === "created_at") {
           aValue = new Date(aValue);
           bValue = new Date(bValue);
         } else if (typeof aValue === "string") {
@@ -100,39 +100,39 @@ const AILogs = () => {
     }
   };
 
-  const getAppName = (appId) => {
+const getAppName = (appId) => {
     const app = apps.find(a => a.Id === appId);
-    return app ? app.AppName : `App ${appId}`;
+    return app ? app.app_name : `App ${appId}`;
   };
 
-  const getUniqueStatuses = () => {
-    const statuses = [...new Set(logs.map(log => log.ChatAnalysisStatus))];
+const getUniqueStatuses = () => {
+    const statuses = [...new Set(logs.map(log => log.chat_analysis_status))];
     return statuses.map(status => ({ 
       value: status, 
       label: status.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) 
     }));
   };
 
-  const getUniqueApps = () => {
-    return apps.map(app => ({ value: app.Id.toString(), label: app.AppName }));
+const getUniqueApps = () => {
+    return apps.map(app => ({ value: app.Id.toString(), label: app.app_name }));
   };
 
-  const columns = [
+const columns = [
     {
-      key: "Summary",
+      key: "summary",
       label: "Summary",
       sortable: true,
       render: (value, row) => (
         <div className="max-w-md">
           <div className="font-medium text-gray-900 mb-1 line-clamp-2">{value}</div>
           <div className="text-xs text-gray-500">
-            App: {getAppName(row.AppId)}
+            App: {getAppName(row.app_id?.Id || row.app_id)}
           </div>
         </div>
       )
     },
-    {
-      key: "CreatedAt",
+{
+      key: "created_at",
       label: "Created At",
       sortable: true,
       render: (value) => (
@@ -142,15 +142,15 @@ const AILogs = () => {
       )
     },
     {
-      key: "ChatAnalysisStatus",
+      key: "chat_analysis_status",
       label: "Status",
       sortable: true,
       render: (value) => (
         <StatusBadge status={value} type="chatAnalysis" />
       )
     },
-    {
-      key: "SentimentScore",
+{
+      key: "sentiment_score",
       label: "Sentiment",
       sortable: true,
       render: (value) => (
@@ -165,7 +165,7 @@ const AILogs = () => {
       )
     },
     {
-      key: "FrustrationLevel",
+      key: "frustration_level",
       label: "Frustration",
       sortable: true,
       render: (value) => (
@@ -180,7 +180,7 @@ const AILogs = () => {
       )
     },
     {
-      key: "TechnicalComplexity",
+      key: "technical_complexity",
       label: "Complexity",
       sortable: true,
       render: (value) => (
@@ -190,7 +190,7 @@ const AILogs = () => {
       )
     },
     {
-      key: "ModelUsed",
+      key: "model_used",
       label: "Model",
       sortable: true,
       render: (value) => (
