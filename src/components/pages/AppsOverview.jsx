@@ -494,20 +494,20 @@ return (
                     <div>
                       <h4 className="text-md font-semibold text-gray-900 mb-4">Activity</h4>
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between">
+<div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <ApperIcon name="MessageSquare" size={16} className="text-gray-400 mr-2" />
                             <span className="text-sm font-medium text-gray-500">Total Messages</span>
-<span className="text-sm font-mono text-gray-900">{selectedApp?.total_messages}</span>
+                          </div>
+                          <span className="text-sm font-mono text-gray-900">{selectedApp?.total_messages}</span>
                         </div>
-                        
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Last Activity</span>
                           <span className="text-sm text-gray-700">
                             {selectedApp?.last_message_at ? format(new Date(selectedApp.last_message_at), "MMM dd, yyyy HH:mm") : "N/A"}
                           </span>
                         </div>
-                        </div>
+</div>
 <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Chat Status</span>
                           <StatusBadge status={selectedApp?.last_chat_analysis_status} type="chatAnalysis" />
@@ -529,13 +529,13 @@ return (
                     <div>
                       <h3 className="text-lg font-semibold text-gray-900 mb-4">User Information</h3>
                       <div className="space-y-4">
-                        <div className="flex items-center justify-between">
+<div className="flex items-center justify-between">
                           <div className="flex items-center">
                             <ApperIcon name="User" size={16} className="text-gray-400 mr-2" />
                             <span className="text-sm font-medium text-gray-500">Name</span>
-<span className="text-sm text-gray-900">{userDetails?.Name || "Loading..."}</span>
+                          </div>
+                          <span className="text-sm text-gray-900">{userDetails?.Name || "Loading..."}</span>
                         </div>
-                        
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Email</span>
                           <a
