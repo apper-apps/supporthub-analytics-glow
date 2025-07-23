@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import App from "@/App";
 import ApperIcon from "@/components/ApperIcon";
 import Error from "@/components/ui/Error";
 import Loading from "@/components/ui/Loading";
@@ -32,14 +31,15 @@ const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
   const [appDetails, setAppDetails] = useState(null);
-  const [userDetails, setUserDetails] = useState(null);
+const [userDetails, setUserDetails] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState("");
-const fetchApps = async () => {
+
+  const fetchApps = async () => {
     try {
       setLoading(true);
       setError("");
-const data = await appService.getAll();
+      const data = await appService.getAll();
       setApps(data || []);
       setFilteredApps(data || []);
       
@@ -504,26 +504,23 @@ return (
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Last Activity</span>
                           <span className="text-sm text-gray-700">
-                            {selectedApp?.last_message_at ? format(new Date(selectedApp.last_message_at), "MMM dd, yyyy HH:mm") : "N/A"}
+{selectedApp?.last_message_at ? format(new Date(selectedApp.last_message_at), "MMM dd, yyyy HH:mm") : "N/A"}
                           </span>
                         </div>
-</div>
-<div className="flex items-center justify-between">
+                        
+                        <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Chat Status</span>
                           <StatusBadge status={selectedApp?.last_chat_analysis_status} type="chatAnalysis" />
                         </div>
-                        
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Last AI Scan</span>
                           <span className="text-sm text-gray-700">
                             {selectedApp?.last_ai_scan_date ? format(new Date(selectedApp.last_ai_scan_date), "MMM dd, yyyy") : "Never"}
-                          </span>
+</span>
                         </div>
-                      </div>
                       </div>
                     </div>
                   </div>
-
                   {/* Right Column - User Information */}
                   <div className="space-y-6">
                     <div>
@@ -562,9 +559,8 @@ return (
                         
                         <div className="flex items-center justify-between">
                           <span className="text-sm font-medium text-gray-500">Credits Used</span>
-                          <span className="text-sm font-mono text-gray-900">{userDetails?.total_credits_used || "0"}</span>
+<span className="text-sm font-mono text-gray-900">{userDetails?.total_credits_used || "0"}</span>
                         </div>
-                      </div>
                       </div>
                     </div>
 
