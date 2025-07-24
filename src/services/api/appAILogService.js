@@ -140,7 +140,7 @@ class AppAILogService {
     }
   }
 
-  async getRecent(limit = 10) {
+async getRecent(limit = 10) {
     try {
       const params = {
         fields: [
@@ -150,7 +150,10 @@ class AppAILogService {
           { field: { Name: "chat_analysis_status" } },
           { field: { Name: "sentiment_score" } },
           { field: { Name: "frustration_level" } },
-          { field: { Name: "app_id" } }
+          { 
+            field: { Name: "app_id" },
+            referenceField: { field: { Name: "Name" } }
+          }
         ],
         orderBy: [
           {
