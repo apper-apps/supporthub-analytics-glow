@@ -79,9 +79,8 @@ transition={{ duration: 0.3, delay: index * 0.1 }}
                 </div>
               </div>
             </motion.div>
-          ))}
+))}
         </div>
-      )}
       )}
     </div>
   );
