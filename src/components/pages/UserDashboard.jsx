@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import appService from "@/services/api/appService";
-import userDetailsService from "@/services/api/userDetailsService";
-import ApperIcon from "@/components/ApperIcon";
-import Signup from "@/components/pages/Signup";
-import DataTable from "@/components/organisms/DataTable";
-import Badge from "@/components/atoms/Badge";
-import StatusBadge from "@/components/molecules/StatusBadge";
 import MetricCard from "@/components/molecules/MetricCard";
-import Error from "@/components/ui/Error";
+import DataTable from "@/components/organisms/DataTable";
+import StatusBadge from "@/components/molecules/StatusBadge";
 import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import userDetailsService from "@/services/api/userDetailsService";
+import appService from "@/services/api/appService";
 
 const UserDashboard = () => {
   const { userId } = useParams();
@@ -213,11 +212,10 @@ const appColumns = [
         {/* Additional Info */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t border-gray-200">
           <div>
-<div className="flex items-center text-sm text-gray-500 mb-1">
+            <div className="flex items-center text-sm text-gray-500 mb-1">
               <ApperIcon name="Calendar" size={14} className="mr-1" />
               Platform Signup
-            </div>
-            <div className="font-medium text-gray-900">
+<div className="font-medium text-gray-900">
               {format(new Date(user.platform_signup_date), "MMM dd, yyyy")}
             </div>
           </div>
@@ -239,8 +237,9 @@ const appColumns = [
           
           <div>
             <div className="text-sm text-gray-500 mb-1">Internal ID</div>
-<div className="font-mono font-medium text-gray-900">{user.user_id}</div>
+            <div className="font-mono font-medium text-gray-900">{user.user_id}</div>
           </div>
+        </div>
         </div>
       </motion.div>
 
@@ -248,11 +247,11 @@ const appColumns = [
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-transition={{ duration: 0.4, delay: 0.2 }}
+        transition={{ duration: 0.4, delay: 0.2 }}
       >
-        <div className="mb-4">
+<div className="mb-4">
           <h3 className="text-lg font-semibold text-gray-900">
-            Apps ({userApps.length})
+            Apps ({userApps.length} of {user.total_apps})
           </h3>
         </div>
         

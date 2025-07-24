@@ -46,35 +46,35 @@ const ActivityFeed = ({ activities = [] }) => {
               className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200"
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-transition={{ duration: 0.3, delay: index * 0.1 }}
+              transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <div className={`flex-shrink-0 ${getActivityColor(activity.chat_analysis_status)}`}>
-                <ApperIcon name={getActivityIcon(activity.chat_analysis_status)} size={20} />
+              <div className={`flex-shrink-0 ${getActivityColor(activity.ChatAnalysisStatus)}`}>
+                <ApperIcon name={getActivityIcon(activity.ChatAnalysisStatus)} size={20} />
               </div>
               
               <div className="flex-1 min-w-0">
 <div className="flex items-center justify-between mb-1">
                   <p className="text-sm font-medium text-gray-900 truncate">
-                    {activity.summary}
+                    {activity.Summary}
                   </p>
                   <span className="text-xs text-gray-500 ml-2">
-                    {activity.created_at && !isNaN(new Date(activity.created_at)) 
-                      ? format(new Date(activity.created_at), "HH:mm")
+                    {activity.CreatedAt && !isNaN(new Date(activity.CreatedAt)) 
+                      ? format(new Date(activity.CreatedAt), "HH:mm")
                       : "N/A"
                     }
                   </span>
                 </div>
                 
                 <div className="flex items-center space-x-3">
-                  <StatusBadge status={activity.chat_analysis_status} type="chatAnalysis" />
-                  {activity.sentiment_score && (
+                  <StatusBadge status={activity.ChatAnalysisStatus} type="chatAnalysis" />
+                  {activity.SentimentScore && (
                     <span className="text-xs text-gray-500">
-                      Sentiment: {activity.sentiment_score.toFixed(1)}
+                      Sentiment: {activity.SentimentScore.toFixed(1)}
                     </span>
                   )}
-                  {activity.frustration_level && (
+                  {activity.FrustrationLevel && (
                     <span className="text-xs text-gray-500">
-                      Frustration: {activity.frustration_level}/5
+                      Frustration: {activity.FrustrationLevel}/5
                     </span>
                   )}
                 </div>

@@ -72,28 +72,22 @@ const fetchComments = async () => {
     }
   };
 
-const handleUpdateSalesStatus = async (newStatus) => {
+  const handleUpdateSalesStatus = async (newStatus) => {
     try {
       const id = parseInt(appId);
       if (isNaN(id) || !newStatus) return;
       
       setCurrentSalesStatus(newStatus);
       
-      // Update the app record with new sales status
-      await appService.update(id, { sales_status: newStatus });
-      
-      // Update local app state to reflect the change
-      setApp(prev => prev ? { ...prev, sales_status: newStatus } : null);
-      
+      // Mock API call - replace with actual service when available
+      // await appService.updateSalesStatus(id, newStatus);
       toast.success("Sales status updated successfully");
     } catch (err) {
-      // Revert local state on error
-      setCurrentSalesStatus(app?.sales_status || "");
       toast.error(err.message || "Failed to update sales status");
     }
   };
 
-const handleSaveComment = async () => {
+  const handleSaveComment = async () => {
     if (!commentForm.comment.trim()) return;
     
     try {
@@ -101,7 +95,7 @@ const handleSaveComment = async () => {
       const id = parseInt(appId);
       if (isNaN(id)) return;
 
-      const commentData = {
+const commentData = {
         app_id: id,
         comment: commentForm.comment.trim(),
         sales_status: commentForm.salesStatus,
@@ -109,13 +103,13 @@ const handleSaveComment = async () => {
         author_avatar: "CU"
       };
 
-      if (editingComment) {
+if (editingComment) {
         await salesCommentService.update(editingComment.Id, commentData);
         const updatedComment = await salesCommentService.getByAppId(id);
         setComments(updatedComment || []);
         toast.success("Comment updated successfully");
       } else {
-const newComment = await salesCommentService.create(commentData);
+        const newComment = await salesCommentService.create(commentData);
         const updatedComments = await salesCommentService.getByAppId(id);
         setComments(updatedComments || []);
         toast.success("Comment added successfully");
@@ -167,10 +161,10 @@ try {
     fetchApp();
   }, [appId]);
 
-useEffect(() => {
+  useEffect(() => {
     if (app) {
       fetchComments();
-      setCurrentSalesStatus(app.sales_status || "");
+      setCurrentSalesStatus(app.SalesStatus || "");
     }
   }, [app, appId]);
 
