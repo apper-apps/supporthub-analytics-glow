@@ -72,22 +72,28 @@ const fetchComments = async () => {
     }
   };
 
-  const handleUpdateSalesStatus = async (newStatus) => {
+const handleUpdateSalesStatus = async (newStatus) => {
     try {
       const id = parseInt(appId);
       if (isNaN(id) || !newStatus) return;
       
       setCurrentSalesStatus(newStatus);
       
-      // Mock API call - replace with actual service when available
-      // await appService.updateSalesStatus(id, newStatus);
+      // Update the app record with new sales status
+      await appService.update(id, { sales_status: newStatus });
+      
+      // Update local app state to reflect the change
+      setApp(prev => prev ? { ...prev, sales_status: newStatus } : null);
+      
       toast.success("Sales status updated successfully");
     } catch (err) {
+      // Revert local state on error
+      setCurrentSalesStatus(app?.sales_status || "");
       toast.error(err.message || "Failed to update sales status");
     }
   };
 
-  const handleSaveComment = async () => {
+const handleSaveComment = async () => {
     if (!commentForm.comment.trim()) return;
     
     try {
@@ -95,7 +101,7 @@ const fetchComments = async () => {
       const id = parseInt(appId);
       if (isNaN(id)) return;
 
-const commentData = {
+      const commentData = {
         app_id: id,
         comment: commentForm.comment.trim(),
         sales_status: commentForm.salesStatus,
@@ -103,7 +109,7 @@ const commentData = {
         author_avatar: "CU"
       };
 
-if (editingComment) {
+      if (editingComment) {
         await salesCommentService.update(editingComment.Id, commentData);
         const updatedComment = await salesCommentService.getByAppId(id);
         setComments(updatedComment || []);
@@ -113,6 +119,13 @@ if (editingComment) {
         const updatedComments = await salesCommentService.getByAppId(id);
         setComments(updatedComments || []);
         toast.success("Comment added successfully");
+      }
+
+      // Update app's sales status if it changed through the comment
+      if (commentForm.salesStatus !== currentSalesStatus) {
+        await appService.update(id, { sales_status: commentForm.salesStatus });
+        setCurrentSalesStatus(commentForm.salesStatus);
+        setApp(prev => prev ? { ...prev, sales_status: commentForm.salesStatus } : null);
       }
 
       handleCloseModal();
@@ -161,10 +174,10 @@ try {
     fetchApp();
   }, [appId]);
 
-  useEffect(() => {
+useEffect(() => {
     if (app) {
       fetchComments();
-      setCurrentSalesStatus(app.SalesStatus || "");
+      setCurrentSalesStatus(app.sales_status || "");
     }
   }, [app, appId]);
 
