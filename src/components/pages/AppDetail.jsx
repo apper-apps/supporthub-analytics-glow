@@ -115,17 +115,10 @@ const handleSaveComment = async () => {
         setComments(updatedComment || []);
         toast.success("Comment updated successfully");
       } else {
-        const newComment = await salesCommentService.create(commentData);
+const newComment = await salesCommentService.create(commentData);
         const updatedComments = await salesCommentService.getByAppId(id);
         setComments(updatedComments || []);
         toast.success("Comment added successfully");
-      }
-
-      // Update app's sales status if it changed through the comment
-      if (commentForm.salesStatus !== currentSalesStatus) {
-        await appService.update(id, { sales_status: commentForm.salesStatus });
-        setCurrentSalesStatus(commentForm.salesStatus);
-        setApp(prev => prev ? { ...prev, sales_status: commentForm.salesStatus } : null);
       }
 
       handleCloseModal();
