@@ -34,15 +34,18 @@ class UserDetailsService {
         ]
       };
 
-      const response = await this.apperClient.fetchRecords(this.tableName, params);
+const response = await this.apperClient.fetchRecords(this.tableName, params);
       
       if (!response.success) {
         console.error(response.message);
         toast.error(response.message);
-        return [];
+        return { data: [], total: 0 };
       }
 
-      return response.data || [];
+      return {
+        data: response.data || [],
+        total: response.total || 0
+      };
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error fetching user details:", error?.response?.data?.message);

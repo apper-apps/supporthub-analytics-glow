@@ -10,25 +10,30 @@ import appService from "@/services/api/appService";
 import appAILogService from "@/services/api/appAILogService";
 
 const Dashboard = () => {
-  const [users, setUsers] = useState([]);
+const [users, setUsers] = useState([]);
   const [apps, setApps] = useState([]);
+  const [totalUsers, setTotalUsers] = useState(0);
+  const [totalApps, setTotalApps] = useState(0);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchDashboardData = async () => {
+const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setError("");
       
-      const [usersData, appsData, logsData] = await Promise.all([
+      const [usersResponse, appsResponse, logsData] = await Promise.all([
         userDetailsService.getAll(),
         appService.getAll(),
         appAILogService.getRecent(20)
       ]);
       
-      setUsers(usersData || []);
-      setApps(appsData || []);
+      // Handle enhanced service responses with data and total properties
+      setUsers(usersResponse?.data || []);
+      setApps(appsResponse?.data || []);
+      setTotalUsers(usersResponse?.total || 0);
+      setTotalApps(appsResponse?.total || 0);
       setLogs(logsData || []);
     } catch (err) {
       setError(err.message || "Failed to load dashboard data");
@@ -63,7 +68,7 @@ const calculateMetrics = () => {
     return [
       {
         title: "Total Users",
-        value: users.length,
+        value: totalUsers, // Use total from API response instead of array length
         icon: "Users",
         color: "blue",
         change: "+12%",
@@ -72,7 +77,7 @@ const calculateMetrics = () => {
       },
       {
         title: "Total Apps",
-        value: apps.length,
+        value: totalApps, // Use total from API response instead of array length
         icon: "Grid3X3",
         color: "green",
         change: "+8%",
