@@ -175,11 +175,11 @@ const handleViewDetails = async (app) => {
     setAppDetails(null);
     setUserDetails(null);
 
-    try {
+try {
       // Fetch app details and user details
       const [appData, userData] = await Promise.all([
         appService.getById(app.Id),
-        userDetailsService.getById(app.UserId)
+        userDetailsService.getById(app.user_id?.Id || app.user_id)
       ]);
       
       setAppDetails(appData);
