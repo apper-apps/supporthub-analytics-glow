@@ -47,10 +47,9 @@ const fetchDashboardData = async () => {
   }, []);
 
 const calculateMetrics = () => {
-    // Use actual database schema values for critical chat analysis statuses
-    const criticalStatuses = ["abandonment_risk", "frustrated", "troubleshooting_db"];
-    const criticalIssues = logs.filter(log => criticalStatuses.includes(log.chat_analysis_status)).length;
-    
+    // Count Apps with critical statuses as specified in requirements
+    const criticalStatuses = ["STUCK", "REPEATING ISSUES", "BUILD FAILURE LOOP"];
+    const criticalIssues = apps.filter(app => criticalStatuses.includes(app.last_chat_analysis_status)).length;
     // Calculate active sessions with proper date validation
     const activeSessions = apps.filter(app => {
       // Check if last_message_at exists and is valid
