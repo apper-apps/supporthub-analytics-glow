@@ -49,7 +49,7 @@ const ActivityFeed = ({ activities = [] }) => {
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.3, delay: index * 0.1 }}
             >
-              <div className={`flex-shrink-0 ${getActivityColor(activity.chat_analysis_status || 'unknown')}`}>
+<div className={`flex-shrink-0 ${getActivityColor(activity.chat_analysis_status || 'unknown')}`}>
                 <ApperIcon name={getActivityIcon(activity.chat_analysis_status || 'unknown')} size={20} />
               </div>
               

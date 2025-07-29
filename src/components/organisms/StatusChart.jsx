@@ -55,8 +55,8 @@ const StatusChart = ({ data = [], title = "Status Distribution" }) => {
       special: "#6b7280",
     };
 
-    const groupedData = data.reduce((acc, item) => {
-      const status = item.ChatAnalysisStatus;
+const groupedData = data.reduce((acc, item) => {
+      const status = item.chat_analysis_status;
       const positiveStatuses = ["smooth_progress", "learning_effectively", "feature_exploring", "goal_achieved", "highly_engaged"];
       const neutralStatuses = ["building_actively", "iterating", "experimenting", "asking_questions"];
       const struggleStatuses = ["stuck", "confused", "repeating_issues", "frustrated", "going_in_circles"];
