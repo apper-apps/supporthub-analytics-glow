@@ -12,17 +12,21 @@ const FilterBar = ({
   onExport,
   showRefresh = false,
   onRefresh,
+  showSearchButton = false,
+  onSearchClick,
   children
 }) => {
   return (
     <div className="bg-white rounded-xl p-6 shadow-sm mb-6">
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-        <div className="flex flex-col sm:flex-row gap-4 flex-1">
+<div className="flex flex-col sm:flex-row gap-4 flex-1">
           <SearchBar
             placeholder={searchPlaceholder}
             value={searchValue}
             onChange={onSearchChange}
             className="flex-1 max-w-md"
+            showSearchButton={showSearchButton}
+            onSearchClick={onSearchClick}
           />
           
           <div className="flex gap-3">

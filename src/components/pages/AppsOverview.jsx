@@ -19,7 +19,7 @@ const navigate = useNavigate();
 const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [searchTerm, setSearchTerm] = useState("");
+const [searchTerm, setSearchTerm] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [dbFilter, setDbFilter] = useState("");
@@ -162,6 +162,9 @@ const [apps, setApps] = useState([]);
       setSortDirection("asc");
     }
 };
+const handleSearch = () => {
+    fetchApps();
+  };
 
   const handleRowClick = (app) => {
     navigate(`/apps/${app.Id}`);
@@ -402,13 +405,15 @@ return (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <FilterBar
+<FilterBar
           searchValue={searchTerm}
           onSearchChange={(e) => setSearchTerm(e.target.value)}
           searchPlaceholder="Search apps, categories..."
           filters={filters}
           showExport={true}
           showRefresh={true}
+          showSearchButton={true}
+          onSearchClick={handleSearch}
           onRefresh={fetchApps}
           onExport={() => {
             // Export functionality
