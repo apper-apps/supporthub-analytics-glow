@@ -115,9 +115,14 @@ const AILogs = () => {
     }
   };
 
+const handleSearch = () => {
+    setCurrentPage(1); // Reset to first page when searching
+    fetchData();
+  };
+
   useEffect(() => {
     fetchData();
-  }, [currentPage, itemsPerPage, searchTerm, statusFilter, appFilter, sortColumn, sortDirection]);
+  }, [currentPage, itemsPerPage, statusFilter, appFilter, sortColumn, sortDirection]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -263,13 +268,15 @@ const columns = [
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <FilterBar
+<FilterBar
           searchValue={searchTerm}
           onSearchChange={(e) => setSearchTerm(e.target.value)}
           searchPlaceholder="Search summaries, status..."
           filters={filters}
           showExport={true}
           showRefresh={true}
+          showSearchButton={true}
+          onSearchClick={handleSearch}
           onRefresh={fetchData}
           onExport={() => {
             // Export functionality

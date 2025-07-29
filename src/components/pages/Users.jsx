@@ -97,9 +97,14 @@ const params = {
     }
   };
 
+const handleSearch = () => {
+    setCurrentPage(1); // Reset to first page when searching
+    fetchUsers();
+  };
+
   useEffect(() => {
     fetchUsers();
-  }, [currentPage, itemsPerPage, searchTerm, planFilter, sortColumn, sortDirection]);
+  }, [currentPage, itemsPerPage, planFilter, sortColumn, sortDirection]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -256,13 +261,15 @@ key: "apper_signup_date",
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-        <FilterBar
+<FilterBar
           searchValue={searchTerm}
           onSearchChange={(e) => setSearchTerm(e.target.value)}
           searchPlaceholder="Search users, emails, companies..."
           filters={filters}
           showExport={true}
           showRefresh={true}
+          showSearchButton={true}
+          onSearchClick={handleSearch}
           onRefresh={fetchUsers}
           onExport={() => {
             // Export functionality
