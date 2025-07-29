@@ -234,9 +234,24 @@ const getUniqueCategories = () => {
     return categories.map(cat => ({ value: cat, label: cat }));
   };
 
-  const getUniqueStatuses = () => {
-    const statuses = [...new Set(apps.map(app => app.last_chat_analysis_status))];
-    return statuses.map(status => ({ 
+const getUniqueStatuses = () => {
+    // Return all possible status values from the database schema
+    // This ensures all options are available even when filters are applied
+    const allStatuses = [
+      "smooth_progress",
+      "needs_guidance", 
+      "frustrated",
+      "building_actively",
+      "goal_achieved",
+      "abandonment_risk",
+      "learning_effectively",
+      "troubleshooting_db",
+      "STUCK",
+      "REPEATING ISSUES",
+      "BUILD FAILURE LOOP"
+    ];
+    
+    return allStatuses.map(status => ({ 
       value: status, 
       label: status.replace(/_/g, " ").replace(/\b\w/g, l => l.toUpperCase()) 
     }));
