@@ -41,11 +41,20 @@ const Dashboard = () => {
     fetchDashboardData();
   }, []);
 
-  const calculateMetrics = () => {
-const criticalStatuses = ["abandonment_risk", "completely_lost", "angry", "giving_up"];
+const calculateMetrics = () => {
+    // Use actual database schema values for critical chat analysis statuses
+    const criticalStatuses = ["abandonment_risk", "frustrated", "troubleshooting_db"];
     const criticalIssues = logs.filter(log => criticalStatuses.includes(log.chat_analysis_status)).length;
+    
+    // Calculate active sessions with proper date validation
     const activeSessions = apps.filter(app => {
+      // Check if last_message_at exists and is valid
+      if (!app.last_message_at) return false;
+      
       const lastMessage = new Date(app.last_message_at);
+      // Validate the date is not invalid
+      if (isNaN(lastMessage.getTime())) return false;
+      
       const now = new Date();
       const hoursDiff = (now - lastMessage) / (1000 * 60 * 60);
       return hoursDiff < 24;
