@@ -14,18 +14,19 @@ const [users, setUsers] = useState([]);
   const [apps, setApps] = useState([]);
   const [totalUsers, setTotalUsers] = useState(0);
   const [totalApps, setTotalApps] = useState(0);
+  const [criticalIssuesCount, setCriticalIssuesCount] = useState(0);
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
 const fetchDashboardData = async () => {
     try {
       setLoading(true);
       setError("");
       
-      const [usersResponse, appsResponse, logsData] = await Promise.all([
+      const [usersResponse, appsResponse, criticalCount, logsData] = await Promise.all([
         userDetailsService.getAll(),
         appService.getAll(),
+        appService.getCriticalIssuesCount(),
         appAILogService.getRecent(20)
       ]);
       
@@ -34,6 +35,7 @@ const fetchDashboardData = async () => {
       setApps(appsResponse?.data || []);
       setTotalUsers(usersResponse?.total || 0);
       setTotalApps(appsResponse?.total || 0);
+      setCriticalIssuesCount(criticalCount);
       setLogs(logsData || []);
     } catch (err) {
       setError(err.message || "Failed to load dashboard data");
@@ -47,9 +49,6 @@ const fetchDashboardData = async () => {
   }, []);
 
 const calculateMetrics = () => {
-    // Count Apps with critical statuses as specified in requirements
-    const criticalStatuses = ["STUCK", "REPEATING ISSUES", "BUILD FAILURE LOOP"];
-    const criticalIssues = apps.filter(app => criticalStatuses.includes(app.last_chat_analysis_status)).length;
     // Calculate active sessions with proper date validation
     const activeSessions = apps.filter(app => {
       // Check if last_message_at exists and is valid
@@ -85,12 +84,12 @@ const calculateMetrics = () => {
       },
       {
         title: "Critical Issues",
-        value: criticalIssues,
+        value: criticalIssuesCount, // Use count from database aggregation
         icon: "AlertTriangle",
         color: "red",
-        change: criticalIssues > 0 ? "-5%" : "0%",
-        changeType: criticalIssues > 0 ? "negative" : "neutral",
-        trend: criticalIssues > 0 ? "down" : "neutral"
+        change: criticalIssuesCount > 0 ? "-5%" : "0%",
+        changeType: criticalIssuesCount > 0 ? "negative" : "neutral",
+        trend: criticalIssuesCount > 0 ? "down" : "neutral"
       },
       {
         title: "Active Sessions",

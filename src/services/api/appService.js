@@ -255,10 +255,56 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
       }
     } catch (error) {
       if (error?.response?.data?.message) {
-        console.error("Error deleting apps:", error?.response?.data?.message);
+console.error("Error deleting apps:", error?.response?.data?.message);
       } else {
         console.error(error.message);
       }
+    }
+  }
+
+  async getCriticalIssuesCount() {
+    try {
+      const params = {
+        aggregators: [
+          {
+            id: "CriticalIssuesCount",
+            fields: [
+              {
+                field: {
+                  Name: "Id"
+                },
+                Function: "Count"
+              }
+            ],
+            where: [
+              {
+                FieldName: "last_chat_analysis_status",
+                Operator: "ExactMatch",
+                Values: ["STUCK", "REPEATING ISSUES", "BUILD FAILURE LOOP"]
+              }
+            ]
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return 0;
+      }
+
+      // Extract count from aggregator results
+      const aggregatorResult = response.aggregators?.find(agg => agg.id === "CriticalIssuesCount");
+      return aggregatorResult?.value || 0;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching critical issues count:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return 0;
     }
   }
 }
