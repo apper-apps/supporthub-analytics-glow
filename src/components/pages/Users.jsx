@@ -57,7 +57,7 @@ const [users, setUsers] = useState([]);
         });
       }
 
-      const params = {
+const params = {
         "fields": [
           { "field": { "Name": "Name" } },
           { "field": { "Name": "email" } },
@@ -66,6 +66,7 @@ const [users, setUsers] = useState([]);
           { "field": { "Name": "total_app_with_db" } },
           { "field": { "Name": "total_credits_used" } },
           { "field": { "Name": "platform_signup_date" } },
+          { "field": { "Name": "apper_signup_date" } },
           { "field": { "Name": "company_id" } }
         ],
         "where": whereConditions,
@@ -204,14 +205,28 @@ const getUniquePlans = () => {
       )
     },
     {
-      key: "apper_signup_date",
+key: "apper_signup_date",
       label: "Apper Signup",
       sortable: true,
-      render: (value) => (
-        <span className="text-sm text-gray-500">
-          {format(new Date(value), "MMM dd, yyyy")}
-        </span>
-      )
+      render: (value) => {
+        if (!value) {
+          return <span className="text-sm text-gray-400">N/A</span>;
+        }
+        
+        try {
+          const date = new Date(value);
+          if (isNaN(date.getTime())) {
+            return <span className="text-sm text-gray-400">N/A</span>;
+          }
+          return (
+            <span className="text-sm text-gray-500">
+              {format(date, "MMM dd, yyyy")}
+            </span>
+          );
+        } catch (error) {
+          return <span className="text-sm text-gray-400">N/A</span>;
+        }
+      }
     }
   ];
 
