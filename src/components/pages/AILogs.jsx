@@ -1,40 +1,115 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import DataTable from "@/components/organisms/DataTable";
+import "@/index.css";
 import FilterBar from "@/components/molecules/FilterBar";
 import StatusBadge from "@/components/molecules/StatusBadge";
+import DataTable from "@/components/organisms/DataTable";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
-import appAILogService from "@/services/api/appAILogService";
-import appService from "@/services/api/appService";
 
 const AILogs = () => {
   const [searchParams] = useSearchParams();
   const [logs, setLogs] = useState([]);
   const [apps, setApps] = useState([]);
-  const [filteredLogs, setFilteredLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [appFilter, setAppFilter] = useState(searchParams.get("appId") || "");
-  const [sortColumn, setSortColumn] = useState("CreatedAt");
+  const [sortColumn, setSortColumn] = useState("created_at");
   const [sortDirection, setSortDirection] = useState("desc");
-
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+// Fetch data with pagination and filters
   const fetchData = async () => {
+    setLoading(true);
+    setError("");
+    
     try {
-      setLoading(true);
-      setError("");
-      const [logsData, appsData] = await Promise.all([
-        appAILogService.getAll(),
-        appService.getAll()
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // Build where conditions based on filters
+      const whereConditions = [];
+      
+      if (searchTerm) {
+        whereConditions.push({
+          "FieldName": "summary",
+          "Operator": "Contains",
+          "Values": [searchTerm]
+        });
+      }
+      
+      if (statusFilter) {
+        whereConditions.push({
+          "FieldName": "chat_analysis_status",
+          "Operator": "EqualTo",
+          "Values": [statusFilter]
+        });
+      }
+      
+      if (appFilter) {
+        whereConditions.push({
+          "FieldName": "app_id",
+          "Operator": "EqualTo",
+          "Values": [parseInt(appFilter)]
+        });
+      }
+
+      const params = {
+        "fields": [
+          { "field": { "Name": "summary" } },
+          { "field": { "Name": "created_at" } },
+          { "field": { "Name": "chat_analysis_status" } },
+          { "field": { "Name": "sentiment_score" } },
+          { "field": { "Name": "frustration_level" } },
+          { "field": { "Name": "technical_complexity" } },
+          { "field": { "Name": "model_used" } },
+          { "field": { "Name": "app_id" } }
+        ],
+        "where": whereConditions,
+        "orderBy": sortColumn ? [{
+          "fieldName": sortColumn,
+          "sorttype": sortDirection.toUpperCase()
+        }] : [{ "fieldName": "created_at", "sorttype": "DESC" }],
+        "pagingInfo": {
+          "limit": itemsPerPage,
+          "offset": (currentPage - 1) * itemsPerPage
+        }
+      };
+
+      const [logsResponse, appsResponse] = await Promise.all([
+        apperClient.fetchRecords("app_ai_log", params),
+        apperClient.fetchRecords("app", {
+          "fields": [
+            { "field": { "Name": "app_name" } }
+          ]
+        })
       ]);
-      setLogs(logsData || []);
-      setApps(appsData || []);
+      
+      if (!logsResponse.success) {
+        throw new Error(logsResponse.message);
+      }
+
+      setLogs(logsResponse.data || []);
+      setTotalItems(logsResponse.total || 0);
+      setTotalPages(Math.ceil((logsResponse.total || 0) / itemsPerPage));
+      
+      if (appsResponse.success) {
+        setApps(appsResponse.data || []);
+      }
     } catch (err) {
-      setError(err.message || "Failed to load AI logs");
+      setError(err.message || "Failed to fetch AI logs");
+      console.error("Error fetching AI logs:", err);
     } finally {
       setLoading(false);
     }
@@ -42,54 +117,16 @@ const AILogs = () => {
 
   useEffect(() => {
     fetchData();
-  }, []);
+  }, [currentPage, itemsPerPage, searchTerm, statusFilter, appFilter, sortColumn, sortDirection]);
 
-  useEffect(() => {
-    let filtered = [...logs];
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
-    // Apply search filter
-if (searchTerm) {
-      filtered = filtered.filter(log =>
-        log.summary.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        log.chat_analysis_status.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-// Apply status filter
-    if (statusFilter) {
-      filtered = filtered.filter(log => log.chat_analysis_status === statusFilter);
-    }
-
-    // Apply app filter
-    if (appFilter) {
-      const appId = parseInt(appFilter);
-      filtered = filtered.filter(log => log.app_id?.Id === appId || log.app_id === appId);
-    }
-
-    // Apply sorting
-    if (sortColumn) {
-      filtered.sort((a, b) => {
-let aValue = a[sortColumn];
-        let bValue = b[sortColumn];
-
-        if (sortColumn === "created_at") {
-          aValue = new Date(aValue);
-          bValue = new Date(bValue);
-        } else if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
-        }
-
-        if (sortDirection === "asc") {
-          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        } else {
-          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-        }
-      });
-    }
-
-    setFilteredLogs(filtered);
-  }, [logs, searchTerm, statusFilter, appFilter, sortColumn, sortDirection]);
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page
+  };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -246,15 +283,22 @@ const columns = [
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
       >
-        <DataTable
+<DataTable
           columns={columns}
-          data={filteredLogs}
+          data={logs}
           loading={loading}
           onSort={handleSort}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
           emptyMessage="No AI logs found"
           emptyDescription="No logs match your current filters. Try adjusting your search criteria."
+          // Pagination props
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
         />
       </motion.div>
     </div>

@@ -2,21 +2,21 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
+import "@/index.css";
+import userDetailsService from "@/services/api/userDetailsService";
+import appService from "@/services/api/appService";
 import ApperIcon from "@/components/ApperIcon";
-import Error from "@/components/ui/Error";
-import Loading from "@/components/ui/Loading";
-import DataTable from "@/components/organisms/DataTable";
 import FilterBar from "@/components/molecules/FilterBar";
 import StatusBadge from "@/components/molecules/StatusBadge";
-import Select from "@/components/atoms/Select";
+import DataTable from "@/components/organisms/DataTable";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
 import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
-import appService from "@/services/api/appService";
-import userDetailsService from "@/services/api/userDetailsService";
+import Select from "@/components/atoms/Select";
 const AppsOverview = () => {
 const navigate = useNavigate();
-  const [apps, setApps] = useState([]);
-  const [filteredApps, setFilteredApps] = useState([]);
+const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
@@ -27,34 +27,115 @@ const navigate = useNavigate();
   const [sortDirection, setSortDirection] = useState("asc");
   const [usersMap, setUsersMap] = useState({});
   
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
+  
   // Modal state
   const [showModal, setShowModal] = useState(false);
   const [selectedApp, setSelectedApp] = useState(null);
   const [appDetails, setAppDetails] = useState(null);
-const [userDetails, setUserDetails] = useState(null);
+  const [userDetails, setUserDetails] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState("");
 
+// Fetch apps data with pagination and filters
   const fetchApps = async () => {
+    setLoading(true);
+    setError("");
+    
     try {
-      setLoading(true);
-      setError("");
-      const data = await appService.getAll();
-      setApps(data || []);
-      setFilteredApps(data || []);
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // Build where conditions based on filters
+      const whereConditions = [];
       
-      // Fetch user details for all apps using user_id lookup field
-      if (data && data.length > 0) {
-        const userIds = [...new Set(data.map(app => app.user_id?.Id || app.user_id).filter(Boolean))];
-        const users = await userDetailsService.getByIds(userIds);
-        const userMap = {};
-        users.forEach(user => {
-          userMap[user.Id] = user;
+      if (searchTerm) {
+        whereConditions.push({
+          "FieldName": "app_name",
+          "Operator": "Contains",
+          "Values": [searchTerm]
         });
-        setUsersMap(userMap);
+      }
+      
+      if (categoryFilter) {
+        whereConditions.push({
+          "FieldName": "app_category",
+          "Operator": "EqualTo",
+          "Values": [categoryFilter]
+        });
+      }
+      
+      if (statusFilter) {
+        whereConditions.push({
+          "FieldName": "last_chat_analysis_status",
+          "Operator": "EqualTo",
+          "Values": [statusFilter]
+        });
+      }
+      
+      if (dbFilter) {
+        whereConditions.push({
+          "FieldName": "is_db_connected",
+          "Operator": "EqualTo",
+          "Values": [dbFilter === "connected"]
+        });
+      }
+
+      const params = {
+        "fields": [
+          { "field": { "Name": "app_name" } },
+          { "field": { "Name": "app_category" } },
+          { "field": { "Name": "is_db_connected" } },
+          { "field": { "Name": "total_messages" } },
+          { "field": { "Name": "last_message_at" } },
+          { "field": { "Name": "last_chat_analysis_status" } },
+          { "field": { "Name": "created_at" } },
+          { "field": { "Name": "sales_status" } },
+          { "field": { "Name": "user_id" } }
+        ],
+        "where": whereConditions,
+        "orderBy": sortColumn ? [{
+          "fieldName": sortColumn,
+          "sorttype": sortDirection.toUpperCase()
+        }] : [{ "fieldName": "created_at", "sorttype": "DESC" }],
+        "pagingInfo": {
+          "limit": itemsPerPage,
+          "offset": (currentPage - 1) * itemsPerPage
+        }
+      };
+
+      const response = await apperClient.fetchRecords("app", params);
+      
+      if (!response.success) {
+        throw new Error(response.message);
+      }
+
+      setApps(response.data || []);
+      setTotalItems(response.total || 0);
+      setTotalPages(Math.ceil((response.total || 0) / itemsPerPage));
+
+      // Fetch user details for lookup fields
+      if (response.data && response.data.length > 0) {
+        const userIds = [...new Set(response.data.map(app => app.user_id?.Id || app.user_id).filter(Boolean))];
+        if (userIds.length > 0) {
+          const usersResponse = await userDetailsService.getByIds(userIds);
+          const userMap = {};
+          usersResponse.forEach(user => {
+            userMap[user.Id] = user;
+          });
+          setUsersMap(userMap);
+        }
       }
     } catch (err) {
-      setError(err.message || "Failed to load apps");
+      setError(err.message || "Failed to fetch apps");
+      console.error("Error fetching apps:", err);
     } finally {
       setLoading(false);
     }
@@ -62,57 +143,16 @@ const [userDetails, setUserDetails] = useState(null);
 
   useEffect(() => {
     fetchApps();
-  }, []);
+  }, [currentPage, itemsPerPage, searchTerm, categoryFilter, statusFilter, dbFilter, sortColumn, sortDirection]);
 
-  useEffect(() => {
-    let filtered = [...apps];
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
-    // Apply search filter
-    if (searchTerm) {
-      filtered = filtered.filter(app =>
-        app.app_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        app.app_category.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-// Apply category filter
-    if (categoryFilter) {
-      filtered = filtered.filter(app => app.app_category === categoryFilter);
-    }
-
-    // Apply status filter
-    if (statusFilter) {
-      filtered = filtered.filter(app => app.last_chat_analysis_status === statusFilter);
-    }
-
-    // Apply DB filter
-    if (dbFilter) {
-      filtered = filtered.filter(app => 
-        dbFilter === "connected" ? app.is_db_connected : !app.is_db_connected
-      );
-    }
-
-    // Apply sorting
-    if (sortColumn) {
-      filtered.sort((a, b) => {
-        let aValue = a[sortColumn];
-        let bValue = b[sortColumn];
-
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
-        }
-
-        if (sortDirection === "asc") {
-          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        } else {
-          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-        }
-      });
-    }
-
-    setFilteredApps(filtered);
-  }, [apps, searchTerm, categoryFilter, statusFilter, dbFilter, sortColumn, sortDirection]);
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page
+  };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -167,9 +207,6 @@ const handleSalesStatusChange = async (appId, newStatus) => {
     try {
       await appService.update(appId, { sales_status: newStatus });
       setApps(prev => prev.map(app => 
-        app.Id === appId ? { ...app, sales_status: newStatus } : app
-      ));
-      setFilteredApps(prev => prev.map(app => 
         app.Id === appId ? { ...app, sales_status: newStatus } : app
       ));
     } catch (err) {
@@ -387,7 +424,7 @@ return (
       >
 <DataTable
           columns={columns}
-          data={filteredApps}
+          data={apps}
           loading={loading}
           onSort={handleSort}
           sortColumn={sortColumn}
@@ -396,6 +433,13 @@ return (
           actions={actions}
           emptyMessage="No apps found"
           emptyDescription="No apps match your current filters. Try adjusting your search criteria."
+          // Pagination props
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
         />
       </motion.div>
 

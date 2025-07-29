@@ -1,34 +1,96 @@
-import { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import DataTable from "@/components/organisms/DataTable";
+import userDetailsService from "@/services/api/userDetailsService";
 import FilterBar from "@/components/molecules/FilterBar";
+import DataTable from "@/components/organisms/DataTable";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Badge from "@/components/atoms/Badge";
-import userDetailsService from "@/services/api/userDetailsService";
 
 const Users = () => {
   const navigate = useNavigate();
-  const [users, setUsers] = useState([]);
-  const [filteredUsers, setFilteredUsers] = useState([]);
+const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [planFilter, setPlanFilter] = useState("");
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [totalItems, setTotalItems] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
+
+// Fetch users data with pagination and filters
   const fetchUsers = async () => {
+    setLoading(true);
+    setError("");
+    
     try {
-      setLoading(true);
-      setError("");
-      const data = await userDetailsService.getAll();
-      setUsers(data || []);
-      setFilteredUsers(data || []);
+      const { ApperClient } = window.ApperSDK;
+      const apperClient = new ApperClient({
+        apperProjectId: import.meta.env.VITE_APPER_PROJECT_ID,
+        apperPublicKey: import.meta.env.VITE_APPER_PUBLIC_KEY
+      });
+
+      // Build where conditions based on filters
+      const whereConditions = [];
+      
+      if (searchTerm) {
+        whereConditions.push({
+          "FieldName": "Name",
+          "Operator": "Contains",
+          "Values": [searchTerm]
+        });
+      }
+      
+      if (planFilter) {
+        whereConditions.push({
+          "FieldName": "plan",
+          "Operator": "EqualTo",
+          "Values": [planFilter]
+        });
+      }
+
+      const params = {
+        "fields": [
+          { "field": { "Name": "Name" } },
+          { "field": { "Name": "email" } },
+          { "field": { "Name": "plan" } },
+          { "field": { "Name": "total_apps" } },
+          { "field": { "Name": "total_app_with_db" } },
+          { "field": { "Name": "total_credits_used" } },
+          { "field": { "Name": "platform_signup_date" } },
+          { "field": { "Name": "company_id" } }
+        ],
+        "where": whereConditions,
+        "orderBy": sortColumn ? [{
+          "fieldName": sortColumn,
+          "sorttype": sortDirection.toUpperCase()
+        }] : [{ "fieldName": "platform_signup_date", "sorttype": "DESC" }],
+        "pagingInfo": {
+          "limit": itemsPerPage,
+          "offset": (currentPage - 1) * itemsPerPage
+        }
+      };
+
+      const response = await apperClient.fetchRecords("user_details", params);
+      
+      if (!response.success) {
+        throw new Error(response.message);
+      }
+
+      setUsers(response.data || []);
+      setTotalItems(response.total || 0);
+      setTotalPages(Math.ceil((response.total || 0) / itemsPerPage));
     } catch (err) {
-      setError(err.message || "Failed to load users");
+      setError(err.message || "Failed to fetch users");
+      console.error("Error fetching users:", err);
     } finally {
       setLoading(false);
     }
@@ -36,46 +98,16 @@ const Users = () => {
 
   useEffect(() => {
     fetchUsers();
-  }, []);
+  }, [currentPage, itemsPerPage, searchTerm, planFilter, sortColumn, sortDirection]);
 
-  useEffect(() => {
-    let filtered = [...users];
+  const handlePageChange = (page) => {
+    setCurrentPage(page);
+  };
 
-    // Apply search filter
-    if (searchTerm) {
-filtered = filtered.filter(user =>
-        user.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.company_id.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    // Apply plan filter
-if (planFilter) {
-      filtered = filtered.filter(user => user.plan === planFilter);
-    }
-
-    // Apply sorting
-    if (sortColumn) {
-      filtered.sort((a, b) => {
-        let aValue = a[sortColumn];
-        let bValue = b[sortColumn];
-
-        if (typeof aValue === "string") {
-          aValue = aValue.toLowerCase();
-          bValue = bValue.toLowerCase();
-        }
-
-        if (sortDirection === "asc") {
-          return aValue < bValue ? -1 : aValue > bValue ? 1 : 0;
-        } else {
-          return aValue > bValue ? -1 : aValue < bValue ? 1 : 0;
-        }
-      });
-    }
-
-    setFilteredUsers(filtered);
-  }, [users, searchTerm, planFilter, sortColumn, sortDirection]);
+  const handleItemsPerPageChange = (newItemsPerPage) => {
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1); // Reset to first page
+  };
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -230,8 +262,8 @@ const getUniquePlans = () => {
         transition={{ duration: 0.4, delay: 0.1 }}
       >
         <DataTable
-          columns={columns}
-          data={filteredUsers}
+columns={columns}
+          data={users}
           loading={loading}
           onSort={handleSort}
           sortColumn={sortColumn}
@@ -240,6 +272,13 @@ const getUniquePlans = () => {
           actions={actions}
           emptyMessage="No users found"
           emptyDescription="No users match your current filters. Try adjusting your search criteria."
+          // Pagination props
+          currentPage={currentPage}
+          totalPages={totalPages}
+          itemsPerPage={itemsPerPage}
+          totalItems={totalItems}
+          onPageChange={handlePageChange}
+          onItemsPerPageChange={handleItemsPerPageChange}
         />
       </motion.div>
     </div>
