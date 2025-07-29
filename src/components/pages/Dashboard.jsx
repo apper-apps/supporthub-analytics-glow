@@ -47,23 +47,6 @@ const fetchDashboardData = async () => {
   }, []);
 
 const calculateMetrics = () => {
-    // Count Apps with critical statuses as specified in requirements
-    const criticalStatuses = ["STUCK", "REPEATING ISSUES", "BUILD FAILURE LOOP"];
-    const criticalIssues = apps.filter(app => criticalStatuses.includes(app.last_chat_analysis_status)).length;
-    // Calculate active sessions with proper date validation
-    const activeSessions = apps.filter(app => {
-      // Check if last_message_at exists and is valid
-      if (!app.last_message_at) return false;
-      
-      const lastMessage = new Date(app.last_message_at);
-      // Validate the date is not invalid
-      if (isNaN(lastMessage.getTime())) return false;
-      
-      const now = new Date();
-      const hoursDiff = (now - lastMessage) / (1000 * 60 * 60);
-      return hoursDiff < 24;
-    }).length;
-
     return [
       {
         title: "Total Users",
@@ -80,24 +63,6 @@ const calculateMetrics = () => {
         icon: "Grid3X3",
         color: "green",
         change: "+8%",
-        changeType: "positive",
-        trend: "up"
-      },
-      {
-        title: "Critical Issues",
-        value: criticalIssues,
-        icon: "AlertTriangle",
-        color: "red",
-        change: criticalIssues > 0 ? "-5%" : "0%",
-        changeType: criticalIssues > 0 ? "negative" : "neutral",
-        trend: criticalIssues > 0 ? "down" : "neutral"
-      },
-      {
-        title: "Active Sessions",
-        value: activeSessions,
-        icon: "Activity",
-        color: "purple",
-        change: "+15%",
         changeType: "positive",
         trend: "up"
       }
