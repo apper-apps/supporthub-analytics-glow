@@ -1,18 +1,17 @@
-import "@/index.css";
-import React, { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
-import { motion } from "framer-motion";
-import { format } from "date-fns";
-import AILogDetailModal from "@/components/organisms/AILogDetailModal";
-import { appAILogService } from "@/services/appAILogService";
-import { toast } from "react-hot-toast";
-import FilterBar from "@/components/molecules/FilterBar";
-import StatusBadge from "@/components/molecules/StatusBadge";
-import DataTable from "@/components/organisms/DataTable";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
+import { motion } from 'framer-motion'
+import { format } from 'date-fns'
+import AILogDetailModal from '@/components/organisms/AILogDetailModal'
+import { appAILogService } from '@/services/appAILogService'
+import { toast } from 'react-toastify'
+import FilterBar from '@/components/molecules/FilterBar'
+import StatusBadge from '@/components/molecules/StatusBadge'
+import DataTable from '@/components/organisms/DataTable'
+import Loading from '@/components/ui/Loading'
+import Error from '@/components/ui/Error'
 
-const AILogs = () => {
+function AILogs() {
   const [searchParams] = useSearchParams();
   const [logs, setLogs] = useState([]);
   const [apps, setApps] = useState([]);
