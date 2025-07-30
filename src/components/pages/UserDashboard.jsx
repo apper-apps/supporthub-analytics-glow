@@ -43,8 +43,7 @@ const fetchUserData = async () => {
         throw new Error("User not found");
       }
 
-// Filter apps for this user (using user_id lookup field)
-// Filter apps for this user with enhanced logging and error handling
+      // Filter apps for this user - app.user_id is a lookup field to user_details table
       const filteredApps = allApps?.data?.filter(app => {
         if (!app || !userData) {
           console.log("Skipping app due to missing data:", { app: !!app, userData: !!userData });
@@ -54,7 +53,6 @@ const fetchUserData = async () => {
         // Handle lookup field - app.user_id can be an object with Id or a direct value
         const appUserId = app.user_id?.Id || app.user_id;
         const userDataId = userData.Id;
-        const userDataUserId = userData.user_id;
         
         // Log matching attempt for debugging
         console.log("Matching app:", {
@@ -62,13 +60,11 @@ const fetchUserData = async () => {
           appName: app.app_name,
           appUserId,
           userDataId,
-          userDataUserId,
-          match: appUserId === userDataId || (userDataUserId && appUserId === userDataUserId)
+          match: appUserId === userDataId
         });
         
-        // Match against user's Id or user_id field
-        return appUserId === userDataId || 
-               (userDataUserId && appUserId === userDataUserId);
+        // Match app.user_id lookup field with user_details.Id
+        return appUserId === userDataId;
       }) || [];
 
       console.log("Filtered apps for user:", filteredApps.length, "apps found");
