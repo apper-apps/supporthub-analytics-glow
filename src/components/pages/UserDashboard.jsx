@@ -39,9 +39,16 @@ const UserDashboard = () => {
       }
 
 // Filter apps for this user (using user_id lookup field)
-      const filteredApps = allApps?.data?.filter(app => 
-        userData.user_id && (app.user_id?.Id === userData.Id || app.user_id === userData.Id)
-      );
+      const filteredApps = allApps?.data?.filter(app => {
+        if (!app || !userData) return false;
+        
+        // Handle lookup field - app.user_id can be an object with Id or a direct value
+        const appUserId = app.user_id?.Id || app.user_id;
+        
+        // Match against user's Id or user_id field
+        return appUserId === userData.Id || 
+               (userData.user_id && appUserId === userData.user_id);
+      }) || [];
 
       setUser(userData);
       setUserApps(filteredApps || []);
