@@ -349,8 +349,7 @@ const columns = [
           onPageChange={handlePageChange}
           onItemsPerPageChange={handleItemsPerPageChange}
         />
-      </motion.div>
-</div>
+</motion.div>
 
       {/* AI Log Detail Modal */}
       <AILogDetailModal
