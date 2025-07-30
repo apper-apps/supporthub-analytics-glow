@@ -384,7 +384,7 @@ try {
             ) : (
 <div className="space-y-4">
                 {comments
-                  .sort((a, b) => new Date(b.CreatedAt) - new Date(a.CreatedAt))
+                  .sort((a, b) => new Date(b.CreatedOn) - new Date(a.CreatedOn))
                   .map((comment) => (
                     <div
                       key={comment.Id}
@@ -399,10 +399,10 @@ try {
                             <div className="font-medium text-gray-900">
                               {comment.author_name}
                             </div>
-                            <div className="flex items-center space-x-2 text-sm text-gray-500">
+<div className="flex items-center space-x-2 text-sm text-gray-500">
                               <StatusBadge status={comment.sales_status} type="sales" />
                               <span>•</span>
-                              <span>{format(new Date(comment.created_at), "MMM dd, yyyy 'at' h:mm a")}</span>
+                              <span>{format(new Date(comment.CreatedOn), "MMM dd, yyyy 'at' h:mm a")}</span>
                             </div>
                           </div>
                         </div>
