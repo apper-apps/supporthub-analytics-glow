@@ -12,11 +12,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(false);
 const [formData, setFormData] = useState({
     Name: '',
-    email: '',
-    Tags: '',
-    plan: 'Free',
-    platform_signup_date: '',
-    apper_signup_date: ''
+    email: ''
   });
 
   // Pre-populate form with user data
@@ -24,11 +20,7 @@ useEffect(() => {
     if (user) {
       setFormData({
         Name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.displayName || '',
-        email: user.emailAddress || '',
-        Tags: '',
-        plan: 'Free',
-        platform_signup_date: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : '',
-        apper_signup_date: new Date().toISOString().split('T')[0]
+        email: user.emailAddress || ''
       });
     }
   }, [user]);
@@ -65,12 +57,6 @@ useEffect(() => {
     }
   };
 
-  const planOptions = [
-    { value: 'Free', label: 'Free' },
-    { value: 'Basic', label: 'Basic' },
-    { value: 'Pro', label: 'Pro' },
-    { value: 'Enterprise', label: 'Enterprise' }
-  ];
 
   return (
     <div className="max-w-4xl mx-auto p-6">
@@ -124,32 +110,6 @@ useEffect(() => {
               </div>
 
               <div>
-                <label htmlFor="Tags" className="block text-sm font-medium text-gray-700 mb-2">
-                  Tags
-                </label>
-                <Input
-                  id="Tags"
-                  name="Tags"
-                  type="text"
-                  value={formData.Tags}
-                  onChange={handleInputChange}
-                  placeholder="Enter tags (comma-separated)"
-                  disabled={loading}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="plan" className="block text-sm font-medium text-gray-700 mb-2">
-                  Plan
-                </label>
-                <Select
-                  id="plan"
-                  name="plan"
-                  value={formData.plan}
-                  onChange={handleInputChange}
-                  options={planOptions}
-                  disabled={loading}
-                />
               </div>
             </div>
 
