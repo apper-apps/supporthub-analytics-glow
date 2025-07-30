@@ -138,7 +138,6 @@ function AppContent() {
           <Route path="apps" element={<AppsOverview />} />
           <Route path="apps/:appId" element={<AppDetail />} />
           <Route path="logs" element={<AILogs />} />
-          <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Routes>
       <ToastContainer
