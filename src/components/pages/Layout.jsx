@@ -6,7 +6,7 @@ import { useLocation } from "react-router-dom";
 const Layout = () => {
   const location = useLocation();
   
-  const getPageInfo = () => {
+const getPageInfo = () => {
     switch (location.pathname) {
       case "/":
         return {
@@ -27,6 +27,11 @@ const Layout = () => {
         return {
           title: "AI Logs",
           subtitle: "Chat analysis logs and user interaction insights"
+        };
+      case "/profile":
+        return {
+          title: "My Profile",
+          subtitle: "Manage your account settings and preferences"
         };
       default:
         if (location.pathname.startsWith("/users/")) {

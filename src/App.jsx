@@ -11,6 +11,7 @@ import AppsOverview from '@/components/pages/AppsOverview';
 import AppDetail from '@/components/pages/AppDetail';
 import Users from '@/components/pages/Users';
 import AILogs from '@/components/pages/AILogs';
+import ProfilePage from '@/components/pages/ProfilePage';
 import Login from '@/components/pages/Login';
 import Signup from '@/components/pages/Signup';
 import Callback from '@/components/pages/Callback';
@@ -130,13 +131,14 @@ function AppContent() {
         <Route path="/error" element={<ErrorPage />} />
         <Route path="/prompt-password/:appId/:emailAddress/:provider" element={<PromptPassword />} />
         <Route path="/reset-password/:appId/:fields" element={<ResetPassword />} />
-        <Route path="/" element={<Layout />}>
+<Route path="/" element={<Layout />}>
           <Route index element={<Dashboard />} />
           <Route path="users" element={<Users />} />
           <Route path="users/:userId" element={<UserDashboard />} />
           <Route path="apps" element={<AppsOverview />} />
           <Route path="apps/:appId" element={<AppDetail />} />
           <Route path="logs" element={<AILogs />} />
+          <Route path="profile" element={<ProfilePage />} />
         </Route>
       </Routes>
       <ToastContainer
