@@ -10,37 +10,25 @@ import userDetailsService from '@/services/api/userDetailsService';
 const ProfilePage = () => {
   const { user } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
-  const [formData, setFormData] = useState({
+const [formData, setFormData] = useState({
     Name: '',
     email: '',
     Tags: '',
     plan: 'Free',
-    user_id: '',
-    total_apps: 0,
-    total_app_with_db: 0,
-    total_credits_used: 0,
     platform_signup_date: '',
-    apper_signup_date: '',
-    company_id: '',
-    company_user_id: ''
+    apper_signup_date: ''
   });
 
   // Pre-populate form with user data
-  useEffect(() => {
+useEffect(() => {
     if (user) {
       setFormData({
         Name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.displayName || '',
         email: user.emailAddress || '',
         Tags: '',
         plan: 'Free',
-        user_id: user.userId || '',
-        total_apps: 0,
-        total_app_with_db: 0,
-        total_credits_used: 0,
         platform_signup_date: user.createdAt ? new Date(user.createdAt).toISOString().split('T')[0] : '',
-        apper_signup_date: new Date().toISOString().split('T')[0],
-        company_id: user.accounts?.[0]?.companyId || '',
-        company_user_id: user.companyUserId || ''
+        apper_signup_date: new Date().toISOString().split('T')[0]
       });
     }
   }, [user]);
@@ -165,107 +153,7 @@ const ProfilePage = () => {
               </div>
             </div>
 
-            {/* Account Details */}
-            <div className="space-y-4">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Account Details</h3>
-              
-              <div>
-                <label htmlFor="user_id" className="block text-sm font-medium text-gray-700 mb-2">
-                  User ID
-                </label>
-                <Input
-                  id="user_id"
-                  name="user_id"
-                  type="text"
-                  value={formData.user_id}
-                  onChange={handleInputChange}
-                  placeholder="User ID"
-                  disabled={loading}
-                />
-              </div>
 
-              <div>
-                <label htmlFor="total_apps" className="block text-sm font-medium text-gray-700 mb-2">
-                  Total Apps
-                </label>
-                <Input
-                  id="total_apps"
-                  name="total_apps"
-                  type="number"
-                  value={formData.total_apps}
-                  onChange={handleInputChange}
-                  placeholder="0"
-                  disabled={loading}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="total_app_with_db" className="block text-sm font-medium text-gray-700 mb-2">
-                  Apps with Database
-                </label>
-                <Input
-                  id="total_app_with_db"
-                  name="total_app_with_db"
-                  type="number"
-                  value={formData.total_app_with_db}
-                  onChange={handleInputChange}
-                  placeholder="0"
-                  disabled={loading}
-                />
-              </div>
-
-              <div>
-                <label htmlFor="total_credits_used" className="block text-sm font-medium text-gray-700 mb-2">
-                  Credits Used
-                </label>
-                <Input
-                  id="total_credits_used"
-                  name="total_credits_used"
-                  type="number"
-                  value={formData.total_credits_used}
-                  onChange={handleInputChange}
-                  placeholder="0"
-                  disabled={loading}
-                />
-              </div>
-            </div>
-
-            {/* Company Information */}
-            <div className="space-y-4 md:col-span-2">
-              <h3 className="text-lg font-medium text-gray-900 mb-4">Company Information</h3>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label htmlFor="company_id" className="block text-sm font-medium text-gray-700 mb-2">
-                    Company ID
-                  </label>
-                  <Input
-                    id="company_id"
-                    name="company_id"
-                    type="text"
-                    value={formData.company_id}
-                    onChange={handleInputChange}
-                    placeholder="Company ID"
-                    disabled={loading}
-                  />
-                </div>
-
-                <div>
-                  <label htmlFor="company_user_id" className="block text-sm font-medium text-gray-700 mb-2">
-                    Company User ID
-                  </label>
-                  <Input
-                    id="company_user_id"
-                    name="company_user_id"
-                    type="text"
-                    value={formData.company_user_id}
-                    onChange={handleInputChange}
-                    placeholder="Company User ID"
-                    disabled={loading}
-                  />
-                </div>
-              </div>
-            </div>
 
             {/* Signup Dates */}
             <div className="space-y-4 md:col-span-2">
