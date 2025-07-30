@@ -12,8 +12,9 @@ class AppService {
 
   async getAll() {
     try {
-      const params = {
+const params = {
         fields: [
+          { field: { Name: "Id" } },
           { field: { Name: "Name" } },
           { field: { Name: "Tags" } },
           { field: { Name: "Owner" } },
@@ -62,8 +63,9 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
       const recordId = parseInt(id);
       if (isNaN(recordId)) return null;
 
-      const params = {
+const params = {
         fields: [
+          { field: { Name: "Id" } },
           { field: { Name: "Name" } },
           { field: { Name: "Tags" } },
           { field: { Name: "Owner" } },
