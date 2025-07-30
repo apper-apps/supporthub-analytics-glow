@@ -186,6 +186,14 @@ try {
         transition={{ duration: 0.4 }}
         className="flex items-center space-x-2 text-sm text-gray-500"
       >
+        <button
+          onClick={() => navigate('/apps')}
+          className="hover:text-gray-700 transition-colors flex items-center space-x-1"
+        >
+          <ApperIcon name="ArrowLeft" size={16} />
+          <span>Apps Overview</span>
+        </button>
+        <ApperIcon name="ChevronRight" size={16} className="text-gray-400" />
         <span className="text-gray-900 font-medium">{app.app_name}</span>
       </motion.div>
 

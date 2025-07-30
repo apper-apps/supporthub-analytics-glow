@@ -49,16 +49,7 @@ const Sidebar = () => {
         ))}
       </nav>
 {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
-        <div className="bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg p-4 mb-3">
-          <div className="flex items-center">
-            <ApperIcon name="Zap" size={16} className="text-primary-600 mr-2" />
-            <div>
-              <p className="text-sm font-medium text-gray-900">Real-time Updates</p>
-              <p className="text-xs text-gray-500">Last sync: just now</p>
-            </div>
-          </div>
-        </div>
+<div className="p-4 border-t border-gray-200">
         <LogoutButton />
       </div>
     </div>
