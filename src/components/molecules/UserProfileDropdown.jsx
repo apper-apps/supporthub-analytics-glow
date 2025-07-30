@@ -141,7 +141,6 @@ const planOptions = [
     { value: 'Enterprise', label: 'Enterprise' }
   ];
 
-  return (
 return (
     <>
       <div className="relative" ref={dropdownRef}>
