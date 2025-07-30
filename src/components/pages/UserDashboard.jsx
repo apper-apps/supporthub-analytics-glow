@@ -39,7 +39,7 @@ const UserDashboard = () => {
       }
 
 // Filter apps for this user (using user_id lookup field)
-      const filteredApps = allApps.filter(app => 
+      const filteredApps = allApps?.data?.filter(app => 
         userData.user_id && (app.user_id?.Id === userData.Id || app.user_id === userData.Id)
       );
 
