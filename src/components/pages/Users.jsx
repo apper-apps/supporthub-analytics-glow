@@ -82,11 +82,13 @@ const params = {
 
       const response = await apperClient.fetchRecords("user_details", params);
       
-      if (!response.success) {
+if (!response.success) {
         throw new Error(response.message);
       }
 
-      setUsers(response.data || []);
+      // Ensure response.data is always an array to prevent "filter is not a function" error
+      const userData = Array.isArray(response.data) ? response.data : [];
+      setUsers(userData);
       setTotalItems(response.total || 0);
       setTotalPages(Math.ceil((response.total || 0) / itemsPerPage));
     } catch (err) {
