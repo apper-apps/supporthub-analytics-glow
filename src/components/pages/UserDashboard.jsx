@@ -1,16 +1,18 @@
-import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import MetricCard from "@/components/molecules/MetricCard";
-import DataTable from "@/components/organisms/DataTable";
-import StatusBadge from "@/components/molecules/StatusBadge";
-import Loading from "@/components/ui/Loading";
-import Error from "@/components/ui/Error";
-import ApperIcon from "@/components/ApperIcon";
-import Badge from "@/components/atoms/Badge";
 import userDetailsService from "@/services/api/userDetailsService";
 import appService from "@/services/api/appService";
+import ApperIcon from "@/components/ApperIcon";
+import StatusBadge from "@/components/molecules/StatusBadge";
+import MetricCard from "@/components/molecules/MetricCard";
+import DataTable from "@/components/organisms/DataTable";
+import Loading from "@/components/ui/Loading";
+import Error from "@/components/ui/Error";
+import Users from "@/components/pages/Users";
+import Signup from "@/components/pages/Signup";
+import Badge from "@/components/atoms/Badge";
 
 const UserDashboard = () => {
   const { userId } = useParams();
@@ -179,9 +181,24 @@ const appColumns = [
       )
     }
   ];
-
-  return (
+return (
     <div className="space-y-6">
+      {/* Back Button */}
+      <motion.div
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.3 }}
+        className="flex items-center"
+      >
+        <button
+          onClick={() => navigate('/users')}
+          className="flex items-center px-4 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+        >
+          <ApperIcon name="ArrowLeft" size={16} className="mr-2" />
+          Back to Users
+        </button>
+      </motion.div>
+
       {/* User Details Card */}
       <motion.div
         className="bg-white rounded-xl shadow-sm p-6"
@@ -238,12 +255,13 @@ const appColumns = [
         </div>
 
         {/* Additional Info */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t border-gray-200">
+<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 pt-6 border-t border-gray-200">
           <div>
             <div className="flex items-center text-sm text-gray-500 mb-1">
               <ApperIcon name="Calendar" size={14} className="mr-1" />
               Platform Signup
-<div className="font-medium text-gray-900">
+            </div>
+            <div className="font-medium text-gray-900">
               {format(new Date(user.platform_signup_date), "MMM dd, yyyy")}
             </div>
           </div>
@@ -262,11 +280,11 @@ const appColumns = [
             <div className="text-sm text-gray-500 mb-1">Company User ID</div>
             <div className="font-mono font-medium text-gray-900">{user.company_user_id}</div>
           </div>
-<div>
+          
+          <div>
             <div className="text-sm text-gray-500 mb-1">User ID</div>
             <div className="font-mono font-medium text-gray-900">{user.user_id}</div>
-          </div>
-        </div>
+</div>
         </div>
       </motion.div>
 
