@@ -342,4 +342,4 @@ async getRecent(limit = 10) {
   }
 }
 
-export default new AppAILogService();
+export default AppAILogService;
