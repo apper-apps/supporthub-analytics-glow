@@ -1,8 +1,11 @@
+import "@/index.css";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import "@/index.css";
+import AILogDetailModal from "@/components/organisms/AILogDetailModal";
+import { appAILogService } from "@/services/appAILogService";
+import { toast } from "react-hot-toast";
 import FilterBar from "@/components/molecules/FilterBar";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import DataTable from "@/components/organisms/DataTable";
@@ -18,7 +21,7 @@ const AILogs = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [appFilter, setAppFilter] = useState(searchParams.get("appId") || "");
-  const [sortColumn, setSortColumn] = useState("created_at");
+const [sortColumn, setSortColumn] = useState("created_at");
   const [sortDirection, setSortDirection] = useState("desc");
   
   // Pagination state
@@ -26,6 +29,14 @@ const AILogs = () => {
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+
+  // Modal state
+  const [selectedLogId, setSelectedLogId] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalLoading, setModalLoading] = useState(false);
+  const [modalError, setModalError] = useState(null);
+  const [selectedLog, setSelectedLog] = useState(null);
+
 // Fetch data with pagination and filters
   const fetchData = async () => {
     setLoading(true);
@@ -140,6 +151,36 @@ const handleSearch = () => {
       setSortColumn(column);
       setSortDirection("asc");
     }
+};
+
+  const openModal = async (log) => {
+    try {
+      setSelectedLogId(log.Id);
+      setModalOpen(true);
+      setModalLoading(true);
+      setModalError(null);
+
+      const detailedLog = await appAILogService.getById(log.Id);
+      if (detailedLog) {
+        setSelectedLog(detailedLog);
+      } else {
+        setModalError('Log details not found');
+      }
+    } catch (error) {
+      console.error('Error fetching log details:', error);
+      setModalError('Failed to load log details');
+      toast.error('Failed to load log details');
+    } finally {
+      setModalLoading(false);
+    }
+  };
+
+  const closeModal = () => {
+    setModalOpen(false);
+    setSelectedLogId(null);
+    setSelectedLog(null);
+    setModalError(null);
+    setModalLoading(false);
   };
 
 const getAppName = (appId) => {
@@ -297,6 +338,7 @@ const columns = [
           onSort={handleSort}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
+          onRowClick={openModal}
           emptyMessage="No AI logs found"
           emptyDescription="No logs match your current filters. Try adjusting your search criteria."
           // Pagination props
@@ -308,6 +350,16 @@ const columns = [
           onItemsPerPageChange={handleItemsPerPageChange}
         />
       </motion.div>
+</div>
+
+      {/* AI Log Detail Modal */}
+      <AILogDetailModal
+        isOpen={modalOpen}
+        onClose={closeModal}
+        log={selectedLog}
+        loading={modalLoading}
+        error={modalError}
+      />
     </div>
   );
 };
