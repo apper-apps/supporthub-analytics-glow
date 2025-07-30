@@ -30,9 +30,10 @@ const params = {
           { field: { Name: "last_message_at" } },
           { field: { Name: "last_chat_analysis_status" } },
           { field: { Name: "last_ai_scan_date" } },
-          { field: { Name: "created_at" } },
+{ field: { Name: "created_at" } },
           { field: { Name: "sales_status" } },
-          { field: { Name: "user_id" } }
+          { field: { Name: "user_id" } },
+          { field: { Name: "has_critical_issues" } }
         ]
       };
 
@@ -81,9 +82,10 @@ const params = {
           { field: { Name: "last_message_at" } },
           { field: { Name: "last_chat_analysis_status" } },
           { field: { Name: "last_ai_scan_date" } },
-          { field: { Name: "created_at" } },
+{ field: { Name: "created_at" } },
           { field: { Name: "sales_status" } },
-          { field: { Name: "user_id" } }
+          { field: { Name: "user_id" } },
+          { field: { Name: "has_critical_issues" } }
         ]
       };
 
@@ -119,11 +121,11 @@ const params = {
         last_message_at: item.last_message_at || new Date().toISOString(),
         last_chat_analysis_status: item.last_chat_analysis_status,
         last_ai_scan_date: item.last_ai_scan_date || new Date().toISOString(),
-        created_at: item.created_at || new Date().toISOString(),
+created_at: item.created_at || new Date().toISOString(),
         sales_status: item.sales_status,
-        user_id: parseInt(item.user_id)
+        user_id: parseInt(item.user_id),
+        has_critical_issues: Boolean(item.has_critical_issues)
       };
-
       const params = {
         records: [updateableData]
       };
@@ -183,10 +185,10 @@ const params = {
       if (data.last_message_at !== undefined) updateableData.last_message_at = data.last_message_at;
       if (data.last_chat_analysis_status !== undefined) updateableData.last_chat_analysis_status = data.last_chat_analysis_status;
       if (data.last_ai_scan_date !== undefined) updateableData.last_ai_scan_date = data.last_ai_scan_date;
-      if (data.created_at !== undefined) updateableData.created_at = data.created_at;
+if (data.created_at !== undefined) updateableData.created_at = data.created_at;
       if (data.sales_status !== undefined) updateableData.sales_status = data.sales_status;
       if (data.user_id !== undefined) updateableData.user_id = parseInt(data.user_id);
-
+      if (data.has_critical_issues !== undefined) updateableData.has_critical_issues = Boolean(data.has_critical_issues);
       const params = {
         records: [updateableData]
       };
