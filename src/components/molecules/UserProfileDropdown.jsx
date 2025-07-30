@@ -68,17 +68,10 @@ const UserProfileDropdown = () => {
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
           >
-            <div className="px-4 py-3 border-b border-gray-100">
+<div className="px-4 py-3 border-b border-gray-100">
               <p className="text-sm font-medium text-gray-900">{displayUser.name}</p>
               <p className="text-sm text-gray-500">{displayUser.email}</p>
               <p className="text-xs text-gray-400 mt-1">Support Team</p>
-            </div>
-            
-            <div className="py-2">
-              <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <ApperIcon name="User" size={16} className="mr-3 text-gray-400" />
-                Profile Settings
-              </button>
             </div>
             
             <div className="border-t border-gray-100 pt-2">
