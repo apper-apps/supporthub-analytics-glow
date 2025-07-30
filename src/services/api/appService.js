@@ -1,4 +1,5 @@
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import React from "react";
 
 class AppService {
   constructor() {
@@ -308,7 +309,67 @@ try {
       } else {
         console.error(error.message);
       }
-      return 0;
+return 0;
+    }
+  }
+
+  async getByUserId(userId) {
+    try {
+      const recordId = parseInt(userId);
+      if (isNaN(recordId)) return { data: [], total: 0 };
+
+      const params = {
+        fields: [
+          { field: { Name: "Id" } },
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "CreatedOn" } },
+          { field: { Name: "CreatedBy" } },
+          { field: { Name: "ModifiedOn" } },
+          { field: { Name: "ModifiedBy" } },
+          { field: { Name: "app_name" } },
+          { field: { Name: "app_category" } },
+          { field: { Name: "is_db_connected" } },
+          { field: { Name: "canvas_app_id" } },
+          { field: { Name: "total_messages" } },
+          { field: { Name: "last_message_at" } },
+          { field: { Name: "last_chat_analysis_status" } },
+          { field: { Name: "last_ai_scan_date" } },
+          { field: { Name: "created_at" } },
+          { field: { Name: "sales_status" } },
+          { field: { Name: "user_id" } },
+          { field: { Name: "has_critical_issues" } }
+        ],
+        where: [
+          {
+            FieldName: "user_id",
+            Operator: "ExactMatch",
+            Values: [recordId],
+            Include: true
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return { data: [], total: 0 };
+      }
+
+      return {
+        data: response.data || [],
+        total: response.total || 0
+      };
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching apps by user ID:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return { data: [], total: 0 };
     }
   }
 }

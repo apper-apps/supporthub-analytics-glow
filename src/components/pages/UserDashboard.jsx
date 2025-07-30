@@ -31,79 +31,30 @@ const fetchUserData = async () => {
         throw new Error("User ID is required");
       }
 
-      const [userData, allApps] = await Promise.all([
+      const [userData, userAppsData] = await Promise.all([
         userDetailsService.getById(userId),
-        appService.getAll()
+        appService.getByUserId(userId)
       ]);
 
       console.log("=== USER DATA DEBUG ===");
       console.log("User data:", userData);
       console.log("User ID from params:", userId);
-      console.log("All apps fetched:", allApps?.data?.length || 0, "apps");
+      console.log("User apps fetched:", userAppsData?.data?.length || 0, "apps");
 
       if (!userData) {
         throw new Error("User not found");
       }
 
-      // Filter apps for this user - app.user_id is a lookup field to user_details table
-      const filteredApps = allApps?.data?.filter(app => {
-        if (!app || !userData) {
-          console.log("⚠️ Skipping app due to missing data:", { 
-            hasApp: !!app, 
-            hasUserData: !!userData 
-          });
-          return false;
-        }
-        
-        // Handle various lookup field formats more robustly
-        let appUserId = null;
-        
-        // Extract user ID from different possible structures
-        if (app.user_id) {
-          if (typeof app.user_id === 'object' && app.user_id.Id) {
-            // Lookup object with Id property
-            appUserId = app.user_id.Id;
-          } else {
-            // Direct value (could be string or number)
-            appUserId = app.user_id;
-          }
-        }
-        
-        const userDataId = userData.Id;
-        
-        // Convert both to strings for comparison to handle mixed types
-        const appUserIdStr = appUserId ? String(appUserId) : null;
-        const userDataIdStr = userDataId ? String(userDataId) : null;
-        const isMatch = appUserIdStr === userDataIdStr;
-        
-        // Enhanced logging for debugging
-        console.log("🔍 App matching analysis:", {
-          appId: app.Id,
-          appName: app.app_name || 'Unknown',
-          appUserIdRaw: app.user_id,
-          appUserIdExtracted: appUserId,
-          appUserIdString: appUserIdStr,
-          userDataId: userDataId,
-          userDataIdString: userDataIdStr,
-          match: isMatch,
-          userIdType: typeof appUserId,
-          userDataIdType: typeof userDataId
-        });
-        
-        // Return match result
-        return isMatch;
-      }) || [];
-
       console.log("=== FILTERING RESULTS ===");
-      console.log(`✅ Filtered apps for user ${userData.Name || userData.email || userId}:`, filteredApps.length, "apps found");
-      console.log("Apps found:", filteredApps.map(app => ({
+      console.log(`✅ Apps for user ${userData.Name || userData.email || userId}:`, userAppsData?.data?.length || 0, "apps found");
+      console.log("Apps found:", userAppsData?.data?.map(app => ({
         id: app.Id,
         name: app.app_name,
         userId: app.user_id
-      })));
+      })) || []);
 
       setUser(userData);
-      setUserApps(filteredApps);
+      setUserApps(userAppsData?.data || []);
     } catch (err) {
       console.error("❌ Error in fetchUserData:", err);
       setError(err.message || "Failed to load user data");
