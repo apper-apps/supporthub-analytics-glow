@@ -136,10 +136,46 @@
     "AppId": 4,
     "Summary": "User highly engaged, implementing multiple features and providing detailed feedback",
     "CreatedAt": "2024-03-15T15:20:00Z",
-    "ChatAnalysisStatus": "highly_engaged",
+"ChatAnalysisStatus": "HIGHLY_ENGAGED",
     "SentimentScore": 0.8,
     "FrustrationLevel": 1,
     "TechnicalComplexity": 4,
+    "ModelUsed": "GPT-4",
+    "ErrorMessage": null
+  },
+  {
+    "Id": 13,
+    "AppId": 5,
+    "Summary": "User successfully implemented advanced features and achieved breakthrough in functionality",
+    "CreatedAt": "2024-03-15T17:30:00Z",
+    "ChatAnalysisStatus": "SUCCESS_BREAKTHROUGH",
+    "SentimentScore": 0.9,
+    "FrustrationLevel": 1,
+    "TechnicalComplexity": 5,
+    "ModelUsed": "GPT-4",
+    "ErrorMessage": null
+  },
+  {
+    "Id": 14,
+    "AppId": 6,
+    "Summary": "User testing various limits and exploring edge cases of the platform",
+    "CreatedAt": "2024-03-15T18:45:00Z",
+    "ChatAnalysisStatus": "TESTING_LIMITS",
+    "SentimentScore": 0.4,
+    "FrustrationLevel": 2,
+    "TechnicalComplexity": 4,
+    "ModelUsed": "GPT-4",
+    "ErrorMessage": null
+  },
+  {
+    "Id": 15,
+    "AppId": 7,
+    "Summary": "User requesting specific feature enhancements for their application",
+    "CreatedAt": "2024-03-15T19:15:00Z",
+    "ChatAnalysisStatus": "FEATURE_REQUEST",
+    "SentimentScore": 0.6,
+    "FrustrationLevel": 2,
+    "TechnicalComplexity": 3,
     "ModelUsed": "GPT-4",
     "ErrorMessage": null
   }
