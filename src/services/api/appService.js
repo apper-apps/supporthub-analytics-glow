@@ -1,4 +1,5 @@
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
+import React from "react";
 
 class AppService {
   constructor() {
@@ -44,23 +45,44 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
       }
 
       return {
-        data: response.data || [],
+        data: response.results || [],
         total: response.total || 0
       };
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error fetching apps:", error?.response?.data?.message);
+        toast.error(error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error("Error fetching apps:", error.message);
+        toast.error("Failed to fetch apps");
       }
-      return [];
+      return { data: [], total: 0 };
     }
   }
 
-  async getById(id) {
+  async create(appData) {
     try {
-      const recordId = parseInt(id);
-      if (isNaN(recordId)) return null;
+      console.error("Create operation blocked: Application is in read-only mode");
+      toast.error("Cannot create app: Database is in read-only mode");
+      return {
+        success: false,
+        message: "Database is in read-only mode. Create operations are disabled.",
+        results: []
+      };
+    } catch (error) {
+      console.error("Read-only mode error:", error.message);
+      toast.error("Operation not allowed in read-only mode");
+      return {
+        success: false,
+        message: "Read-only mode: Create operations are disabled",
+        results: []
+      };
+    }
+  }
+
+  async getById(recordId) {
+    try {
+      if (!recordId || isNaN(recordId)) return null;
 
       const params = {
         fields: [
@@ -87,83 +109,28 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
 
       const response = await this.apperClient.getRecordById(this.tableName, recordId, params);
       
-      if (!response || !response.data) {
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
         return null;
       }
 
-      return response.data;
+      return response.result;
     } catch (error) {
       if (error?.response?.data?.message) {
-        console.error(`Error fetching app with ID ${id}:`, error?.response?.data?.message);
+        console.error("Error fetching app by ID:", error?.response?.data?.message);
+        toast.error(error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error("Error fetching app by ID:", error.message);
+        toast.error("Failed to fetch app");
       }
       return null;
     }
   }
 
-  async create(item) {
+  async update(recordId, data) {
     try {
-      // Only include Updateable fields
-      const updateableData = {
-        Name: item.Name,
-        Tags: item.Tags,
-        Owner: parseInt(item.Owner),
-        app_name: item.app_name,
-        app_category: item.app_category,
-        is_db_connected: Boolean(item.is_db_connected),
-        canvas_app_id: item.canvas_app_id,
-        total_messages: parseInt(item.total_messages) || 0,
-        last_message_at: item.last_message_at || new Date().toISOString(),
-        last_chat_analysis_status: item.last_chat_analysis_status,
-        last_ai_scan_date: item.last_ai_scan_date || new Date().toISOString(),
-        created_at: item.created_at || new Date().toISOString(),
-        sales_status: item.sales_status,
-        user_id: parseInt(item.user_id)
-      };
-
-      const params = {
-        records: [updateableData]
-      };
-
-      const response = await this.apperClient.createRecord(this.tableName, params);
-      
-      if (!response.success) {
-        console.error(response.message);
-        toast.error(response.message);
-        return [];
-      }
-
-      if (response.results) {
-        const successfulRecords = response.results.filter(result => result.success);
-        const failedRecords = response.results.filter(result => !result.success);
-        
-        if (failedRecords.length > 0) {
-          console.error(`Failed to create apps ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
-          
-          failedRecords.forEach(record => {
-            record.errors?.forEach(error => {
-              toast.error(`${error.fieldLabel}: ${error.message}`);
-            });
-            if (record.message) toast.error(record.message);
-          });
-        }
-        
-        return successfulRecords.map(result => result.data);
-      }
-    } catch (error) {
-      if (error?.response?.data?.message) {
-        console.error("Error creating apps:", error?.response?.data?.message);
-      } else {
-        console.error(error.message);
-      }
-    }
-  }
-
-  async update(id, data) {
-    try {
-      const recordId = parseInt(id);
-      if (isNaN(recordId)) return null;
+if (!recordId || isNaN(recordId)) return null;
 
       // Only include Updateable fields
       const updateableData = {
@@ -217,8 +184,10 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error updating apps:", error?.response?.data?.message);
+        toast.error(error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error("Error updating apps:", error.message);
+        toast.error("Failed to update app");
       }
     }
   }
@@ -254,11 +223,14 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
         return successfulDeletions.length === ids.length;
       }
     } catch (error) {
-      if (error?.response?.data?.message) {
-console.error("Error deleting apps:", error?.response?.data?.message);
+if (error?.response?.data?.message) {
+        console.error("Error deleting apps:", error?.response?.data?.message);
+        toast.error(error?.response?.data?.message);
       } else {
-        console.error(error.message);
+        console.error("Error deleting apps:", error.message);
+        toast.error("Failed to delete apps");
       }
+      return false;
     }
   }
 
