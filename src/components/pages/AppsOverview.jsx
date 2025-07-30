@@ -20,7 +20,6 @@ const [apps, setApps] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 const [searchTerm, setSearchTerm] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [dbFilter, setDbFilter] = useState("");
   const [sortColumn, setSortColumn] = useState("");
@@ -64,15 +63,8 @@ const [searchTerm, setSearchTerm] = useState("");
         });
       }
       
-      if (categoryFilter) {
-        whereConditions.push({
-          "FieldName": "app_category",
-          "Operator": "EqualTo",
-          "Values": [categoryFilter]
-        });
-      }
       
-      if (statusFilter) {
+if (statusFilter) {
         whereConditions.push({
           "FieldName": "last_chat_analysis_status",
           "Operator": "EqualTo",
@@ -141,9 +133,9 @@ const [searchTerm, setSearchTerm] = useState("");
     }
   };
 
-  useEffect(() => {
+useEffect(() => {
     fetchApps();
-  }, [currentPage, itemsPerPage, searchTerm, categoryFilter, statusFilter, dbFilter, sortColumn, sortDirection]);
+  }, [currentPage, itemsPerPage, searchTerm, statusFilter, dbFilter, sortColumn, sortDirection]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -229,26 +221,45 @@ const handleSalesStatusChange = async (appId, newStatus) => {
     { value: "Contract review", label: "Contract Review" }
   ];
   
-const getUniqueCategories = () => {
-    const categories = [...new Set(apps.map(app => app.app_category))];
-    return categories.map(cat => ({ value: cat, label: cat }));
-  };
 
 const getUniqueStatuses = () => {
-    // Return all possible status values from the database schema
+    // Return all possible status values from the database schema for last_chat_analysis_status
     // This ensures all options are available even when filters are applied
     const allStatuses = [
-      "smooth_progress",
-      "needs_guidance", 
-      "frustrated",
-      "building_actively",
-      "goal_achieved",
-      "abandonment_risk",
-      "learning_effectively",
-      "troubleshooting_db",
+      "SMOOTH_PROGRESS",
+      "LEARNING_EFFECTIVELY",
+      "FEATURE_EXPLORING",
+      "GOAL_ACHIEVED",
+      "HIGHLY_ENGAGED",
+      "BUILDING_ACTIVELY",
+      "ITERATING",
+      "EXPERIMENTING",
+      "SUCCESS_BREAKTHROUGH",
+      "ASKING_QUESTIONS",
+      "NEEDS_GUIDANCE",
+      "REQUESTING_EXAMPLES",
+      "SEEKING_ALTERNATIVES",
+      "DOCUMENTATION_NEEDED",
       "STUCK",
-      "REPEATING ISSUES",
-      "BUILD FAILURE LOOP"
+      "CONFUSED",
+      "REPEATING_ISSUES",
+      "FRUSTRATED",
+      "GOING_IN_CIRCLES",
+      "ABANDONMENT_RISK",
+      "COMPLETELY_LOST",
+      "ANGRY",
+      "GIVING_UP",
+      "DEBUGGING",
+      "TROUBLESHOOTING_DB",
+      "PERFORMANCE_ISSUES",
+      "INTEGRATION_PROBLEMS",
+      "READY_FOR_UPGRADE",
+      "HITTING_LIMITS",
+      "FEATURE_REQUEST",
+      "OFF_TOPIC",
+      "INACTIVE",
+      "TESTING_LIMITS",
+      "COPY_PASTING"
     ];
     
     return allStatuses.map(status => ({ 
@@ -386,13 +397,7 @@ const actions = [
     }
   ];
 
-  const filters = [
-    {
-      placeholder: "All Categories",
-      value: categoryFilter,
-      onChange: (e) => setCategoryFilter(e.target.value),
-      options: getUniqueCategories()
-    },
+const filters = [
     {
       placeholder: "All Statuses",
       value: statusFilter,
@@ -423,7 +428,7 @@ return (
 <FilterBar
           searchValue={searchTerm}
           onSearchChange={(e) => setSearchTerm(e.target.value)}
-          searchPlaceholder="Search apps, categories..."
+          searchPlaceholder="Search apps..."
           filters={filters}
           showExport={true}
           showRefresh={true}
