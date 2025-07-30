@@ -94,7 +94,7 @@ const calculateMetrics = () => {
         <DashboardMetrics metrics={metrics} />
       </motion.div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <motion.div
           className="lg:col-span-2"
           initial={{ opacity: 0, x: -20 }}
@@ -104,6 +104,24 @@ const calculateMetrics = () => {
           <ActivityFeed activities={logs} />
         </motion.div>
 
+        <motion.div
+          className="lg:col-span-1"
+          initial={{ opacity: 0, x: 20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
+          {/* Right column for additional dashboard widgets */}
+          <div className="bg-white rounded-xl shadow-sm p-6">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-lg font-semibold text-gray-900">Quick Actions</h3>
+            </div>
+            <div className="space-y-3">
+              <div className="text-center py-8">
+                <div className="text-gray-400 text-sm">Additional dashboard widgets can be added here</div>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

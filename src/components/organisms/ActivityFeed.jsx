@@ -56,7 +56,7 @@ const ActivityFeed = ({ activities = [] }) => {
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
-<p className="text-sm font-medium text-gray-900 truncate">
+<p className="text-sm font-medium text-gray-800 truncate">
                     {activity.summary || activity.Name || `Activity #${activity.Id}` || 'Recent activity'}
                   </p>
                   <span className="text-xs text-gray-500 ml-2">
