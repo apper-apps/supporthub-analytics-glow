@@ -159,7 +159,7 @@ const handleSearch = () => {
     setSelectedLog(null);
   };
 const getAppName = (appId) => {
-    const app = apps.find(a => a.Id === appId);
+    const app = apps.data.find(a => a.Id === appId);
     return app ? app.Name : `App ${appId}`;
   };
 
