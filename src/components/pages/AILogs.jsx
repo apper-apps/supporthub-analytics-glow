@@ -184,7 +184,7 @@ const columns = [
         <div className="max-w-md">
           <div className="font-medium text-gray-900 mb-1 line-clamp-2">{value}</div>
           <div className="text-xs text-gray-500">
-            App: {getAppName(row.app_id?.Name || row.app_id)}
+            App: {row.app_id?.Name}
           </div>
         </div>
       )
