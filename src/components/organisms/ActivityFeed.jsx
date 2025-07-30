@@ -34,14 +34,15 @@ const ActivityFeed = ({ activities = [] }) => {
         <ApperIcon name="Activity" size={20} className="text-gray-400" />
 </div>
       
-      {activities.length === 0 ? (
+{!activities || activities.length === 0 ? (
         <div className="text-center py-8">
           <ApperIcon name="Clock" size={48} className="text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No recent activity</p>
+          <p className="text-gray-500 text-sm">No recent activity found</p>
+          <p className="text-gray-400 text-xs mt-1">Activity will appear here when users interact with apps</p>
         </div>
       ) : (
         <div className="space-y-4">
-          {activities.slice(0, 6).map((activity, index) => (
+{activities.slice(0, 6).map((activity, index) => (
             <motion.div
               key={activity.Id}
               className="flex items-start space-x-4 p-4 rounded-lg hover:bg-gray-50 transition-colors duration-200"
@@ -55,8 +56,8 @@ const ActivityFeed = ({ activities = [] }) => {
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between mb-1">
-                  <p className="text-sm font-medium text-gray-900 truncate">
-                    {activity.summary || activity.Name || 'Recent activity'}
+<p className="text-sm font-medium text-gray-900 truncate">
+                    {activity.summary || activity.Name || `Activity #${activity.Id}` || 'Recent activity'}
                   </p>
                   <span className="text-xs text-gray-500 ml-2">
                     {(() => {

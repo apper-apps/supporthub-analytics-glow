@@ -2,11 +2,11 @@ import { motion } from "framer-motion";
 import MetricCard from "@/components/molecules/MetricCard";
 
 const DashboardMetrics = ({ metrics }) => {
-  const defaultMetrics = [
-    { title: "Total Users", value: 0, icon: "Users", color: "blue" },
-    { title: "Total Apps", value: 0, icon: "Grid3X3", color: "green" },
-    { title: "Critical Issues", value: 0, icon: "AlertTriangle", color: "red" },
-    { title: "Active Sessions", value: 0, icon: "Activity", color: "purple" },
+const defaultMetrics = [
+    { title: "Total Users", value: 0, icon: "Users", color: "blue", change: "0%", changeType: "neutral" },
+    { title: "Total Apps", value: 0, icon: "Grid3X3", color: "green", change: "0%", changeType: "neutral" },
+    { title: "Critical Issues", value: 0, icon: "AlertTriangle", color: "red", change: "0%", changeType: "neutral" },
+    { title: "Active Sessions", value: 0, icon: "Activity", color: "purple", change: "0%", changeType: "neutral" },
   ];
 
   const displayMetrics = metrics || defaultMetrics;

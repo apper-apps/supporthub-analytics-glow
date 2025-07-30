@@ -267,7 +267,7 @@ console.error("Error deleting apps:", error?.response?.data?.message);
   }
 
   async getCriticalIssuesCount() {
-    try {
+try {
       const params = {
         aggregators: [
           {
@@ -282,9 +282,9 @@ console.error("Error deleting apps:", error?.response?.data?.message);
             ],
             where: [
               {
-                FieldName: "last_chat_analysis_status",
+                FieldName: "has_critical_issues",
                 Operator: "ExactMatch",
-                Values: ["STUCK", "REPEATING ISSUES", "BUILD FAILURE LOOP"]
+                Values: [true]
               }
             ]
           }
