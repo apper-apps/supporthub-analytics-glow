@@ -168,9 +168,6 @@ try {
     }
   }, [app, appId]);
 
-  const handleBack = () => {
-    navigate("/apps");
-  };
 
   const handleViewLogs = () => {
     navigate(`/logs?appId=${app.Id}`);
@@ -183,20 +180,12 @@ try {
   return (
     <div className="space-y-6">
       {/* Breadcrumb */}
-      <motion.div
+<motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
         className="flex items-center space-x-2 text-sm text-gray-500"
       >
-        <button
-          onClick={handleBack}
-          className="hover:text-gray-700 flex items-center space-x-1"
-        >
-          <ApperIcon name="ArrowLeft" size={16} />
-          <span>Apps</span>
-        </button>
-<ApperIcon name="ChevronRight" size={16} />
         <span className="text-gray-900 font-medium">{app.app_name}</span>
       </motion.div>
 
@@ -239,7 +228,7 @@ try {
               </div>
             </div>
           </div>
-          <div className="flex space-x-3">
+<div className="flex justify-end">
             <Button
               variant="outline"
               onClick={handleViewLogs}
@@ -247,14 +236,6 @@ try {
             >
               <ApperIcon name="FileText" size={16} />
               <span>View Logs</span>
-            </Button>
-            <Button
-              variant="outline"
-              onClick={handleBack}
-              className="flex items-center space-x-2"
-            >
-              <ApperIcon name="ArrowLeft" size={16} />
-              <span>Back to Apps</span>
             </Button>
           </div>
         </div>
@@ -330,42 +311,6 @@ try {
       </motion.div>
 
       {/* Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.4, delay: 0.3 }}
-        className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
-      >
-        <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center">
-          <ApperIcon name="Zap" size={20} className="mr-2" />
-          Quick Actions
-        </h3>
-        <div className="flex flex-wrap gap-3">
-          <Button
-            onClick={handleViewLogs}
-            className="flex items-center space-x-2"
-          >
-            <ApperIcon name="FileText" size={16} />
-            <span>View Activity Logs</span>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast.info("Feature coming soon")}
-            className="flex items-center space-x-2"
-          >
-            <ApperIcon name="Download" size={16} />
-            <span>Export Data</span>
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => toast.info("Feature coming soon")}
-            className="flex items-center space-x-2"
-          >
-            <ApperIcon name="RefreshCw" size={16} />
-            <span>Refresh Analysis</span>
-          </Button>
-</div>
-      </motion.div>
 
       {/* Sales Comments & Status Section */}
       <motion.div
