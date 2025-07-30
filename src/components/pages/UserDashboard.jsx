@@ -262,9 +262,8 @@ const appColumns = [
             <div className="text-sm text-gray-500 mb-1">Company User ID</div>
             <div className="font-mono font-medium text-gray-900">{user.company_user_id}</div>
           </div>
-          
-          <div>
-            <div className="text-sm text-gray-500 mb-1">Internal ID</div>
+<div>
+            <div className="text-sm text-gray-500 mb-1">User ID</div>
             <div className="font-mono font-medium text-gray-900">{user.user_id}</div>
           </div>
         </div>
