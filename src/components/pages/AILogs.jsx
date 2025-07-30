@@ -1,8 +1,8 @@
+import "@/index.css";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import "@/index.css";
 import FilterBar from "@/components/molecules/FilterBar";
 import StatusBadge from "@/components/molecules/StatusBadge";
 import DataTable from "@/components/organisms/DataTable";
@@ -22,10 +22,15 @@ const AILogs = () => {
   const [sortDirection, setSortDirection] = useState("desc");
   
   // Pagination state
-  const [currentPage, setCurrentPage] = useState(1);
+const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  const [totalItems, setTotalItems] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  const [totalItems, setTotalItems] = useState(0);
+  // Modal state
+  const [showModal, setShowModal] = useState(false);
+  const [selectedLog, setSelectedLog] = useState(null);
+
+  // Fetch data with pagination and filters
 // Fetch data with pagination and filters
   const fetchData = async () => {
     setLoading(true);
@@ -140,8 +145,19 @@ const handleSearch = () => {
       setSortColumn(column);
       setSortDirection("asc");
     }
+};
+
+  // Handle row click to open modal
+  const handleRowClick = (log) => {
+    setSelectedLog(log);
+    setShowModal(true);
   };
 
+  // Close modal
+  const closeModal = () => {
+    setShowModal(false);
+    setSelectedLog(null);
+  };
 const getAppName = (appId) => {
     const app = apps.find(a => a.Id === appId);
     return app ? app.app_name : `App ${appId}`;
@@ -297,6 +313,7 @@ const columns = [
           onSort={handleSort}
           sortColumn={sortColumn}
           sortDirection={sortDirection}
+          onRowClick={handleRowClick}
           emptyMessage="No AI logs found"
           emptyDescription="No logs match your current filters. Try adjusting your search criteria."
           // Pagination props
@@ -308,6 +325,154 @@ const columns = [
           onItemsPerPageChange={handleItemsPerPageChange}
         />
       </motion.div>
+
+      {/* AI Log Detail Modal */}
+      {showModal && selectedLog && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <motion.div
+            className="bg-white rounded-xl shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.2 }}
+          >
+            {/* Modal Header */}
+            <div className="flex items-center justify-between p-6 border-b border-gray-200">
+              <h2 className="text-xl font-semibold text-gray-900">AI Log Details</h2>
+              <button
+                onClick={closeModal}
+                className="text-gray-400 hover:text-gray-600 transition-colors"
+              >
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6">
+              {/* Summary Section */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">Summary</h3>
+                <div className="bg-gray-50 rounded-lg p-4">
+                  <p className="text-gray-700 leading-relaxed">{selectedLog.summary}</p>
+                </div>
+              </div>
+
+              {/* App Information */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">App Information</h3>
+                <div className="bg-blue-50 rounded-lg p-4">
+                  <div className="flex items-center">
+                    <span className="font-medium text-blue-900">App:</span>
+                    <span className="ml-2 text-blue-700">
+                      {getAppName(selectedLog.app_id?.Id || selectedLog.app_id)}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Analysis Metrics */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">Analysis Metrics</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {/* Status */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm font-medium text-gray-500 mb-2">Status</div>
+                    <StatusBadge status={selectedLog.chat_analysis_status} type="chatAnalysis" />
+                  </div>
+
+                  {/* Sentiment Score */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm font-medium text-gray-500 mb-2">Sentiment Score</div>
+                    <div className="flex items-center">
+                      <span className={`font-mono text-lg font-semibold ${
+                        selectedLog.sentiment_score > 0.3 ? "text-green-600" : 
+                        selectedLog.sentiment_score < -0.3 ? "text-red-600" : "text-gray-600"
+                      }`}>
+                        {selectedLog.sentiment_score?.toFixed(2) || "N/A"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Frustration Level */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm font-medium text-gray-500 mb-2">Frustration Level</div>
+                    <div className="flex items-center">
+                      <span className={`font-mono text-lg font-semibold ${
+                        selectedLog.frustration_level >= 4 ? "text-red-600" : 
+                        selectedLog.frustration_level >= 3 ? "text-yellow-600" : "text-green-600"
+                      }`}>
+                        {selectedLog.frustration_level || 0}/5
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Technical Complexity */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm font-medium text-gray-500 mb-2">Technical Complexity</div>
+                    <div className="flex items-center">
+                      <span className="font-mono text-lg font-semibold text-gray-600">
+                        {selectedLog.technical_complexity || 0}/5
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Technical Details */}
+              <div>
+                <h3 className="text-lg font-medium text-gray-900 mb-3">Technical Details</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* Model Used */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm font-medium text-gray-500 mb-2">Model Used</div>
+                    <span className="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-md font-mono text-sm">
+                      {selectedLog.model_used}
+                    </span>
+                  </div>
+
+                  {/* Created At */}
+                  <div className="bg-white border border-gray-200 rounded-lg p-4">
+                    <div className="text-sm font-medium text-gray-500 mb-2">Created At</div>
+                    <span className="text-gray-700 font-medium">
+                      {format(new Date(selectedLog.created_at), "MMM dd, yyyy 'at' HH:mm")}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Error Information */}
+              {selectedLog.error_message && (
+                <div>
+                  <h3 className="text-lg font-medium text-gray-900 mb-3">Error Information</h3>
+                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                    <div className="flex items-start">
+                      <svg className="w-5 h-5 text-red-400 mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                      </svg>
+                      <div>
+                        <div className="font-medium text-red-800 mb-1">Error Message</div>
+                        <p className="text-red-700">{selectedLog.error_message}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Modal Footer */}
+            <div className="flex justify-end p-6 border-t border-gray-200">
+              <button
+                onClick={closeModal}
+                className="px-4 py-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors"
+              >
+                Close
+              </button>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
