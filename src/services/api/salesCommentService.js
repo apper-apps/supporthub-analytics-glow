@@ -59,13 +59,10 @@ class SalesCommentService {
     }
   }
 
-  async create(comment) {
+async create(comment) {
     try {
       // Only include Updateable fields
       const updateableData = {
-        Name: comment.Name,
-        Tags: comment.Tags,
-        Owner: parseInt(comment.Owner),
         comment: comment.comment,
         sales_status: comment.sales_status,
         author_name: comment.author_name,
@@ -74,6 +71,11 @@ class SalesCommentService {
         updated_at: comment.updated_at || new Date().toISOString(),
         app_id: parseInt(comment.app_id)
       };
+
+      // Add optional fields only if provided
+      if (comment.Name !== undefined) updateableData.Name = comment.Name;
+      if (comment.Tags !== undefined) updateableData.Tags = comment.Tags;
+      if (comment.Owner !== undefined) updateableData.Owner = parseInt(comment.Owner);
 
       const params = {
         records: [updateableData]
