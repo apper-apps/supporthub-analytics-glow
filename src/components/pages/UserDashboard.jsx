@@ -20,7 +20,7 @@ const UserDashboard = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const fetchUserData = async () => {
+const fetchUserData = async () => {
     try {
       setLoading(true);
       setError("");
@@ -34,24 +34,45 @@ const UserDashboard = () => {
         appService.getAll()
       ]);
 
+      console.log("User data:", userData);
+      console.log("All apps fetched:", allApps?.data?.length || 0, "apps");
+
       if (!userData) {
         throw new Error("User not found");
       }
 
 // Filter apps for this user (using user_id lookup field)
+// Filter apps for this user with enhanced logging and error handling
       const filteredApps = allApps?.data?.filter(app => {
-        if (!app || !userData) return false;
+        if (!app || !userData) {
+          console.log("Skipping app due to missing data:", { app: !!app, userData: !!userData });
+          return false;
+        }
         
         // Handle lookup field - app.user_id can be an object with Id or a direct value
         const appUserId = app.user_id?.Id || app.user_id;
+        const userDataId = userData.Id;
+        const userDataUserId = userData.user_id;
+        
+        // Log matching attempt for debugging
+        console.log("Matching app:", {
+          appId: app.Id,
+          appName: app.app_name,
+          appUserId,
+          userDataId,
+          userDataUserId,
+          match: appUserId === userDataId || (userDataUserId && appUserId === userDataUserId)
+        });
         
         // Match against user's Id or user_id field
-        return appUserId === userData.Id || 
-               (userData.user_id && appUserId === userData.user_id);
+        return appUserId === userDataId || 
+               (userDataUserId && appUserId === userDataUserId);
       }) || [];
 
+      console.log("Filtered apps for user:", filteredApps.length, "apps found");
+
       setUser(userData);
-      setUserApps(filteredApps || []);
+      setUserApps(filteredApps);
     } catch (err) {
       setError(err.message || "Failed to load user data");
     } finally {

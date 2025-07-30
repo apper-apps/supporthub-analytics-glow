@@ -48,7 +48,8 @@ const DataTable = ({
     return <Loading type="table" />;
   }
 
-  if (!data || data.length === 0) {
+if (!data || data.length === 0) {
+    console.log("DataTable: No data to display", { data: data, length: data?.length });
     return (
       <div className="bg-white rounded-xl shadow-sm p-8">
         <Empty 
