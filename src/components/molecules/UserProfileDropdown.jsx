@@ -79,14 +79,6 @@ const UserProfileDropdown = () => {
                 <ApperIcon name="User" size={16} className="mr-3 text-gray-400" />
                 Profile Settings
               </button>
-              <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <ApperIcon name="Settings" size={16} className="mr-3 text-gray-400" />
-                Preferences
-              </button>
-              <button className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-200">
-                <ApperIcon name="HelpCircle" size={16} className="mr-3 text-gray-400" />
-                Help & Support
-              </button>
             </div>
             
             <div className="border-t border-gray-100 pt-2">
