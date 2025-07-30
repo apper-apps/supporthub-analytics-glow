@@ -92,11 +92,11 @@ const [currentPage, setCurrentPage] = useState(1);
         }
       };
 
-      const [logsResponse, appsResponse] = await Promise.all([
+const [logsResponse, appsResponse] = await Promise.all([
         apperClient.fetchRecords("app_ai_log", params),
         apperClient.fetchRecords("app", {
           "fields": [
-            { "field": { "Name": "app_name" } }
+            { "field": { "Name": "Name" } }
           ]
         })
       ]);
