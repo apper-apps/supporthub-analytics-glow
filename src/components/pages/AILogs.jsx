@@ -160,7 +160,7 @@ const handleSearch = () => {
   };
 const getAppName = (appId) => {
     const app = apps.find(a => a.Id === appId);
-    return app ? app.app_name : `App ${appId}`;
+    return app ? app.Name : `App ${appId}`;
   };
 
 const getUniqueStatuses = () => {
