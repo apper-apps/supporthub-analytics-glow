@@ -159,6 +159,9 @@ const handleSearch = () => {
     setSelectedLog(null);
   };
   const getAppName = (appId) => {
+    if (appId == 91) {
+      console.log(JSON.stringify(apps));
+    }
     const app = apps.find(a => a.Id === appId);
     console.log(app);
     return app ? app.Name : `App ${appId}`;
