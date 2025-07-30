@@ -1,5 +1,4 @@
-import { toast } from "react-toastify";
-import React from "react";
+import { toast } from 'react-toastify';
 
 class AppAILogService {
   constructor() {
@@ -41,7 +40,8 @@ class AppAILogService {
         toast.error(response.message);
         return [];
       }
-return response.data || [];
+
+      return response.data || [];
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error fetching AI logs:", error?.response?.data?.message);
@@ -51,6 +51,140 @@ return response.data || [];
       return [];
     }
   }
+
+  async getById(id) {
+    try {
+      const recordId = parseInt(id);
+      if (isNaN(recordId)) return null;
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "Tags" } },
+          { field: { Name: "Owner" } },
+          { field: { Name: "CreatedOn" } },
+          { field: { Name: "CreatedBy" } },
+          { field: { Name: "ModifiedOn" } },
+          { field: { Name: "ModifiedBy" } },
+          { field: { Name: "summary" } },
+          { field: { Name: "created_at" } },
+          { field: { Name: "chat_analysis_status" } },
+          { field: { Name: "sentiment_score" } },
+          { field: { Name: "frustration_level" } },
+          { field: { Name: "technical_complexity" } },
+          { field: { Name: "model_used" } },
+          { field: { Name: "error_message" } },
+          { field: { Name: "app_id" } }
+        ]
+      };
+
+      const response = await this.apperClient.getRecordById(this.tableName, recordId, params);
+      
+      if (!response || !response.data) {
+        return null;
+      }
+
+      return response.data;
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error(`Error fetching AI log with ID ${id}:`, error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return null;
+    }
+  }
+
+  async getByAppId(appId) {
+    try {
+      const numericAppId = parseInt(appId);
+      if (isNaN(numericAppId)) return [];
+
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "summary" } },
+          { field: { Name: "created_at" } },
+          { field: { Name: "chat_analysis_status" } },
+          { field: { Name: "sentiment_score" } },
+          { field: { Name: "frustration_level" } },
+          { field: { Name: "technical_complexity" } },
+          { field: { Name: "model_used" } },
+          { field: { Name: "error_message" } },
+          { field: { Name: "app_id" } }
+        ],
+        where: [
+          {
+            FieldName: "app_id",
+            Operator: "EqualTo",
+            Values: [numericAppId]
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching AI logs by app ID:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
+  }
+
+async getRecent(limit = 10) {
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Name" } },
+          { field: { Name: "summary" } },
+          { field: { Name: "created_at" } },
+          { field: { Name: "chat_analysis_status" } },
+          { field: { Name: "sentiment_score" } },
+          { field: { Name: "frustration_level" } },
+          { 
+            field: { Name: "app_id" },
+            referenceField: { field: { Name: "Name" } }
+          }
+        ],
+        orderBy: [
+          {
+            fieldName: "created_at",
+            sorttype: "DESC"
+          }
+        ],
+        pagingInfo: {
+          limit: limit,
+          offset: 0
+        }
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching recent AI logs:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
+  }
+
   async create(item) {
     try {
       // Only include Updateable fields

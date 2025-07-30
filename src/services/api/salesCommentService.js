@@ -1,5 +1,4 @@
-import { toast } from "react-toastify";
-import React from "react";
+import { toast } from 'react-toastify';
 
 class SalesCommentService {
   constructor() {
@@ -42,7 +41,45 @@ class SalesCommentService {
         ]
       };
 
-const response = await this.apperClient.fetchRecords(this.tableName, params);
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error fetching sales comments by app ID:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
+  }
+
+  async create(comment) {
+    try {
+      // Only include Updateable fields
+      const updateableData = {
+        Name: comment.Name,
+        Tags: comment.Tags,
+        Owner: parseInt(comment.Owner),
+        comment: comment.comment,
+        sales_status: comment.sales_status,
+        author_name: comment.author_name,
+        author_avatar: comment.author_avatar,
+        created_at: comment.created_at || new Date().toISOString(),
+        updated_at: comment.updated_at || new Date().toISOString(),
+        app_id: parseInt(comment.app_id)
+      };
+
+      const params = {
+        records: [updateableData]
+      };
+
+      const response = await this.apperClient.createRecord(this.tableName, params);
       
       if (!response.success) {
         console.error(response.message);
@@ -50,51 +87,88 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
         return [];
       }
 
-      return response.results || [];
+      if (response.results) {
+        const successfulRecords = response.results.filter(result => result.success);
+        const failedRecords = response.results.filter(result => !result.success);
+        
+        if (failedRecords.length > 0) {
+          console.error(`Failed to create sales comments ${failedRecords.length} records:${JSON.stringify(failedRecords)}`);
+          
+          failedRecords.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulRecords.map(result => result.data);
+      }
     } catch (error) {
-      console.error("Error fetching sales comments:", error?.response?.data?.message || error.message);
-      toast.error("Failed to load sales comments");
-      return [];
+      if (error?.response?.data?.message) {
+        console.error("Error creating sales comments:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
     }
   }
 
-  async create(commentData) {
+  async update(id, data) {
     try {
-      console.error("Create operation blocked: Application is in read-only mode");
-      toast.error("Cannot create sales comment: Database is in read-only mode");
-      return {
-        success: false,
-        message: "Database is in read-only mode. Create operations are disabled.",
-        results: []
-      };
-    } catch (error) {
-      console.error("Read-only mode error:", error.message);
-      toast.error("Operation not allowed in read-only mode");
-      return {
-        success: false,
-        message: "Read-only mode: Create operations are disabled",
-        results: []
-      };
-    }
-  }
+      const recordId = parseInt(id);
+      if (isNaN(recordId)) return null;
 
-  async update(id, commentData) {
-    try {
-      console.error(`Update operation blocked for sales comment ID ${id}: Application is in read-only mode`);
-      toast.error("Cannot update sales comment: Database is in read-only mode");
-      return {
-        success: false,
-        message: "Database is in read-only mode. Update operations are disabled.",
-        results: []
+      // Only include Updateable fields
+      const updateableData = {
+        Id: recordId,
+        updated_at: new Date().toISOString()
       };
+
+      if (data.Name !== undefined) updateableData.Name = data.Name;
+      if (data.Tags !== undefined) updateableData.Tags = data.Tags;
+      if (data.Owner !== undefined) updateableData.Owner = parseInt(data.Owner);
+      if (data.comment !== undefined) updateableData.comment = data.comment;
+      if (data.sales_status !== undefined) updateableData.sales_status = data.sales_status;
+      if (data.author_name !== undefined) updateableData.author_name = data.author_name;
+      if (data.author_avatar !== undefined) updateableData.author_avatar = data.author_avatar;
+      if (data.created_at !== undefined) updateableData.created_at = data.created_at;
+      if (data.app_id !== undefined) updateableData.app_id = parseInt(data.app_id);
+
+      const params = {
+        records: [updateableData]
+      };
+
+      const response = await this.apperClient.updateRecord(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        toast.error(response.message);
+        return [];
+      }
+
+      if (response.results) {
+        const successfulUpdates = response.results.filter(result => result.success);
+        const failedUpdates = response.results.filter(result => !result.success);
+        
+        if (failedUpdates.length > 0) {
+          console.error(`Failed to update sales comments ${failedUpdates.length} records:${JSON.stringify(failedUpdates)}`);
+          
+          failedUpdates.forEach(record => {
+            record.errors?.forEach(error => {
+              toast.error(`${error.fieldLabel}: ${error.message}`);
+            });
+            if (record.message) toast.error(record.message);
+          });
+        }
+        
+        return successfulUpdates.map(result => result.data);
+      }
     } catch (error) {
-      console.error("Read-only mode error:", error.message);
-      toast.error("Operation not allowed in read-only mode");
-      return {
-        success: false,
-        message: "Read-only mode: Update operations are disabled",
-        results: []
-      };
+      if (error?.response?.data?.message) {
+        console.error("Error updating sales comments:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
     }
   }
 
