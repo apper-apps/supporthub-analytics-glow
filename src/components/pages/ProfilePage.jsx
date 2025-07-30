@@ -11,15 +11,23 @@ const ProfilePage = () => {
   const { user } = useSelector((state) => state.user);
   const [loading, setLoading] = useState(false);
 const [formData, setFormData] = useState({
-    Name: '',
+    firstName: '',
+    lastName: '',
     email: ''
   });
 
   // Pre-populate form with user data
 useEffect(() => {
     if (user) {
+      // Split existing full name into first and last name components
+      const fullName = user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.displayName || '';
+      const nameParts = fullName.trim().split(' ');
+      const firstName = nameParts[0] || '';
+      const lastName = nameParts.slice(1).join(' ') || '';
+      
       setFormData({
-        Name: user.firstName && user.lastName ? `${user.firstName} ${user.lastName}` : user.displayName || '',
+        firstName,
+        lastName,
         email: user.emailAddress || ''
       });
     }
@@ -33,7 +41,7 @@ useEffect(() => {
     }));
   };
 
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
 
@@ -42,7 +50,13 @@ useEffect(() => {
       // you would get the user's profile record ID from the database
       const profileId = 1; 
       
-      const result = await userDetailsService.update(profileId, formData);
+      // Combine firstName and lastName into Name field for database compatibility
+      const submitData = {
+        ...formData,
+        Name: `${formData.firstName} ${formData.lastName}`.trim()
+      };
+      
+      const result = await userDetailsService.update(profileId, submitData);
       
       if (result && result.length > 0) {
         toast.success('Profile updated successfully!');
@@ -76,20 +90,35 @@ useEffect(() => {
         <form onSubmit={handleSubmit} className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Basic Information */}
-            <div className="space-y-4">
+<div className="space-y-4">
               <h3 className="text-lg font-medium text-gray-900 mb-4">Basic Information</h3>
               
               <div>
-                <label htmlFor="Name" className="block text-sm font-medium text-gray-700 mb-2">
-                  Full Name
+                <label htmlFor="firstName" className="block text-sm font-medium text-gray-700 mb-2">
+                  First Name
                 </label>
                 <Input
-                  id="Name"
-                  name="Name"
+                  id="firstName"
+                  name="firstName"
                   type="text"
-                  value={formData.Name}
+                  value={formData.firstName}
                   onChange={handleInputChange}
-                  placeholder="Enter your full name"
+                  placeholder="Enter your first name"
+                  disabled={loading}
+                />
+              </div>
+
+              <div>
+                <label htmlFor="lastName" className="block text-sm font-medium text-gray-700 mb-2">
+                  Last Name
+                </label>
+                <Input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  value={formData.lastName}
+                  onChange={handleInputChange}
+                  placeholder="Enter your last name"
                   disabled={loading}
                 />
               </div>
