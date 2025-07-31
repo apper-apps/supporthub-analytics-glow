@@ -172,7 +172,12 @@ const getUniqueStatuses = () => {
   };
 
 const getUniqueApps = () => {
-    return apps.map(app => ({ value: app.Id.toString(), label: app.app_name }));
+    // Get unique app IDs from current logs
+    const uniqueAppIds = [...new Set(logs.map(log => log.app_id?.Id || log.app_id).filter(Boolean))];
+    // Filter apps to only show those that have AI logs
+    return apps
+      .filter(app => uniqueAppIds.includes(app.Id))
+      .map(app => ({ value: app.Id.toString(), label: app.app_name }));
   };
 
 const columns = [
