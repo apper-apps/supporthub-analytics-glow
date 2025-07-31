@@ -93,12 +93,14 @@ useEffect(() => {
     e.preventDefault();
     setLoading(true);
 
-    try {
-      // For demo purposes, using a mock ID. In real implementation, 
-      // you would get the user's profile record ID from the database
-      const profileId = 1; 
+try {
+      // Use the authenticated user's ID from Redux state
+      if (!user || !user.userId) {
+        toast.error('User information not available. Please log in again.');
+        return;
+      }
       
-      const result = await userDetailsService.update(profileId, formData);
+      const result = await userDetailsService.update(user.userId, formData);
       
       if (result && result.length > 0) {
         toast.success('Profile updated successfully!');
