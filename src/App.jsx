@@ -11,7 +11,6 @@ import AppsOverview from '@/components/pages/AppsOverview';
 import AppDetail from '@/components/pages/AppDetail';
 import Users from '@/components/pages/Users';
 import AILogs from '@/components/pages/AILogs';
-import ProfilePage from '@/components/pages/ProfilePage';
 import Login from '@/components/pages/Login';
 import Signup from '@/components/pages/Signup';
 import Callback from '@/components/pages/Callback';
