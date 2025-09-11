@@ -317,6 +317,7 @@ async getByIds(ids) {
       };
 
       const response = await this.apperClient.fetchRecords(this.tableName, params);
+      console.log('inside searchByEmail : ', response);
       
       if (!response.success) {
         console.error(response.message);
