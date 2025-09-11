@@ -208,7 +208,7 @@ const fetchApps = async () => {
 
 useEffect(() => {
     fetchApps();
-  }, [currentPage, itemsPerPage, searchTerm, statusFilter, dbFilter, sortColumn, sortDirection]);
+  }, [currentPage, itemsPerPage, statusFilter, dbFilter, sortColumn, sortDirection]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
