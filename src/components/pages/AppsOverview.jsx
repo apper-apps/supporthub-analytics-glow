@@ -41,7 +41,7 @@ const [searchTerm, setSearchTerm] = useState("");
   const [modalError, setModalError] = useState("");
 
 // Fetch apps data with pagination and filters
-  const fetchApps = async () => {
+const fetchApps = async () => {
     setLoading(true);
     setError("");
     
@@ -55,38 +55,62 @@ const [searchTerm, setSearchTerm] = useState("");
       // Build where conditions based on filters
       const whereConditions = [];
       
-// Enhanced search: search by app name OR user email
+      // Enhanced search: search by app name OR user email
+      // For email search, we need to first find users with matching emails, then search apps by those user IDs
+      let userIdsFromEmailSearch = [];
+      
+      if (searchTerm) {
+        // Check if searchTerm contains '@' to determine if it might be an email search
+        if (searchTerm.includes('@')) {
+          try {
+            // First, search for users with matching emails
+            const userSearchResponse = await userDetailsService.searchByEmail(searchTerm);
+            if (userSearchResponse && userSearchResponse.length > 0) {
+              userIdsFromEmailSearch = userSearchResponse.map(user => user.Id);
+            }
+          } catch (emailSearchError) {
+            console.warn("Email search failed, proceeding with app name search only:", emailSearchError);
+          }
+        }
+      }
+      
       const searchGroups = [];
       if (searchTerm) {
+        const searchSubGroups = [
+          {
+            "conditions": [
+              {
+                "fieldName": "app_name",
+                "operator": "Contains",
+                "values": [searchTerm]
+              }
+            ],
+            "operator": "AND"
+          }
+        ];
+        
+        // If we found users from email search, add them to the search
+        if (userIdsFromEmailSearch.length > 0) {
+          searchSubGroups.push({
+            "conditions": [
+              {
+                "fieldName": "user_id",
+                "operator": "ExactMatch",
+                "values": userIdsFromEmailSearch
+              }
+            ],
+            "operator": "AND"
+          });
+        }
+        
         searchGroups.push({
           "operator": "OR",
-          "subGroups": [
-            {
-              "conditions": [
-                {
-                  "fieldName": "app_name",
-                  "operator": "Contains",
-                  "values": [searchTerm]
-                }
-              ],
-              "operator": "AND"
-            },
-            {
-              "conditions": [
-                {
-                  "fieldName": "user_id.email",
-                  "operator": "Contains", 
-                  "values": [searchTerm]
-                }
-              ],
-              "operator": "AND"
-            }
-          ]
+          "subGroups": searchSubGroups
         });
       }
       
       
-if (statusFilter) {
+      if (statusFilter) {
         whereConditions.push({
           "FieldName": "last_chat_analysis_status",
           "Operator": "EqualTo",
@@ -114,7 +138,7 @@ if (statusFilter) {
           { "field": { "Name": "sales_status" } },
           { "field": { "Name": "user_id" } }
         ],
-"where": whereConditions,
+        "where": whereConditions,
         "whereGroups": searchGroups,
         "orderBy": sortColumn ? [{
           "fieldName": sortColumn,

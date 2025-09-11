@@ -258,7 +258,7 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
     }
   }
 
-  async getByIds(ids) {
+async getByIds(ids) {
     try {
       const numericIds = ids.map(id => parseInt(id)).filter(id => !isNaN(id));
       if (numericIds.length === 0) return [];
@@ -290,6 +290,43 @@ const response = await this.apperClient.fetchRecords(this.tableName, params);
     } catch (error) {
       if (error?.response?.data?.message) {
         console.error("Error fetching users by IDs:", error?.response?.data?.message);
+      } else {
+        console.error(error.message);
+      }
+      return [];
+    }
+  }
+
+  async searchByEmail(searchTerm) {
+    try {
+      const params = {
+        fields: [
+          { field: { Name: "Id" } },
+          { field: { Name: "Name" } },
+          { field: { Name: "email" } },
+          { field: { Name: "plan" } }
+        ],
+        where: [
+          {
+            FieldName: "email",
+            Operator: "Contains",
+            Values: [searchTerm],
+            Include: true
+          }
+        ]
+      };
+
+      const response = await this.apperClient.fetchRecords(this.tableName, params);
+      
+      if (!response.success) {
+        console.error(response.message);
+        return [];
+      }
+
+      return response.data || [];
+    } catch (error) {
+      if (error?.response?.data?.message) {
+        console.error("Error searching users by email:", error?.response?.data?.message);
       } else {
         console.error(error.message);
       }
