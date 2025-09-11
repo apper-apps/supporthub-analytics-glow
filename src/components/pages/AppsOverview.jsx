@@ -77,20 +77,7 @@ const fetchApps = async () => {
       
       const searchGroups = [];
       if (searchTerm) {
-        const searchSubGroups = [
-          {
-            "conditions": [
-              {
-                "fieldName": "app_name",
-                "operator": "Contains",
-                "values": [searchTerm]
-              }
-            ],
-            "operator": "AND"
-          }
-        ];
-        
-        // If we found users from email search, add them to the search
+        const searchSubGroups = [];
         if (userIdsFromEmailSearch.length > 0) {
           searchSubGroups.push({
             "conditions": [
@@ -102,7 +89,44 @@ const fetchApps = async () => {
             ],
             "operator": "AND"
           });
+        } else {
+          searchSubGroups.push({
+              "conditions": [
+                {
+                  "fieldName": "app_name",
+                  "operator": "Contains",
+                  "values": [searchTerm]
+                }
+              ],
+              "operator": "AND"
+            })
         }
+        // const searchSubGroups = [
+        //   {
+        //     "conditions": [
+        //       {
+        //         "fieldName": "app_name",
+        //         "operator": "Contains",
+        //         "values": [searchTerm]
+        //       }
+        //     ],
+        //     "operator": "AND"
+        //   }
+        // ];
+        
+        // If we found users from email search, add them to the search
+        // if (userIdsFromEmailSearch.length > 0) {
+        //   searchSubGroups.push({
+        //     "conditions": [
+        //       {
+        //         "fieldName": "user_id",
+        //         "operator": "ExactMatch",
+        //         "values": userIdsFromEmailSearch
+        //       }
+        //     ],
+        //     "operator": "AND"
+        //   });
+        // }
         
         searchGroups.push({
           "operator": "OR",
@@ -152,6 +176,7 @@ const fetchApps = async () => {
       };
 
       const response = await apperClient.fetchRecords("app", params);
+      console.log('response in search :', response);
       
       if (!response.success) {
         throw new Error(response.message);
