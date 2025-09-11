@@ -22,7 +22,7 @@ const FilterBar = ({
       <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
 <div className="flex flex-col sm:flex-row gap-4 flex-1">
 <SearchBar
-            placeholder={searchPlaceholder}
+            placeholder={searchPlaceholder === "Search..." ? "Search by app name or user email..." : searchPlaceholder}
             value={searchValue}
             onChange={onSearchChange}
             className="flex-1 max-w-md"
