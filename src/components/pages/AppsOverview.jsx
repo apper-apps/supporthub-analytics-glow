@@ -67,6 +67,7 @@ const fetchApps = async () => {
             const userSearchResponse = await userDetailsService.searchByEmail(searchTerm);
             if (userSearchResponse && userSearchResponse.length > 0) {
               userIdsFromEmailSearch = userSearchResponse.map(user => user.Id);
+              console.log('ids :', userIdsFromEmailSearch);
             }
           } catch (emailSearchError) {
             console.warn("Email search failed, proceeding with app name search only:", emailSearchError);
