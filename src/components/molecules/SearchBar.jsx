@@ -7,8 +7,19 @@ const SearchBar = ({
   onChange,
   className = "",
   showSearchButton = false,
-  onSearchClick
+  onSearchClick,
+  onKeyDown
 }) => {
+  
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter' && onSearchClick) {
+      e.preventDefault();
+      onSearchClick();
+    }
+    if (onKeyDown) {
+      onKeyDown(e);
+    }
+  };
 return (
     <div className={`relative ${className}`}>
       <ApperIcon 
@@ -16,10 +27,11 @@ return (
         size={20} 
         className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" 
       />
-      <Input
+<Input
         placeholder={placeholder}
         value={value}
         onChange={onChange}
+        onKeyDown={handleKeyDown}
         className={`pl-10 ${showSearchButton ? 'pr-12' : ''}`}
       />
       {showSearchButton && (
