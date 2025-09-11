@@ -55,11 +55,33 @@ const [searchTerm, setSearchTerm] = useState("");
       // Build where conditions based on filters
       const whereConditions = [];
       
+// Enhanced search: search by app name OR user email
+      const searchGroups = [];
       if (searchTerm) {
-        whereConditions.push({
-          "FieldName": "app_name",
-          "Operator": "Contains",
-          "Values": [searchTerm]
+        searchGroups.push({
+          "operator": "OR",
+          "subGroups": [
+            {
+              "conditions": [
+                {
+                  "fieldName": "app_name",
+                  "operator": "Contains",
+                  "values": [searchTerm]
+                }
+              ],
+              "operator": "AND"
+            },
+            {
+              "conditions": [
+                {
+                  "fieldName": "user_id.email",
+                  "operator": "Contains", 
+                  "values": [searchTerm]
+                }
+              ],
+              "operator": "AND"
+            }
+          ]
         });
       }
       
@@ -92,7 +114,8 @@ if (statusFilter) {
           { "field": { "Name": "sales_status" } },
           { "field": { "Name": "user_id" } }
         ],
-        "where": whereConditions,
+"where": whereConditions,
+        "whereGroups": searchGroups,
         "orderBy": sortColumn ? [{
           "fieldName": sortColumn,
           "sorttype": sortDirection.toUpperCase()
