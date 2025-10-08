@@ -24,6 +24,9 @@ const AILogs = () => {
   // Pagination state
 const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
+  const [dateMode, setDateMode] = useState('');
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   // Modal state
@@ -44,7 +47,7 @@ const [currentPage, setCurrentPage] = useState(1);
       });
 
       // Build where conditions based on filters
-      const whereConditions = [];
+const whereConditions = [];
       
       if (searchTerm) {
         whereConditions.push({
@@ -70,6 +73,22 @@ const [currentPage, setCurrentPage] = useState(1);
         });
       }
 
+      // Add date range filters
+      if (dateFrom) {
+        whereConditions.push({
+          "FieldName": "created_at",
+          "Operator": "GreaterThanOrEqualTo",
+          "Values": [dateFrom]
+        });
+      }
+
+      if (dateTo) {
+        whereConditions.push({
+          "FieldName": "created_at",
+          "Operator": "LessThanOrEqualTo",
+          "Values": [dateTo]
+        });
+      }
       const params = {
         "fields": [
           { "field": { "Name": "summary" } },
@@ -125,10 +144,16 @@ const handleSearch = () => {
     fetchData();
   };
 
+  const handleDateRangeChange = (from, to, mode) => {
+    setDateFrom(from);
+    setDateTo(to);
+    setDateMode(mode);
+    setCurrentPage(1); // Reset to first page when date range changes
+  };
+
   useEffect(() => {
     fetchData();
-  }, [currentPage, itemsPerPage, statusFilter, appFilter, sortColumn, sortDirection]);
-
+  }, [currentPage, itemsPerPage, statusFilter, appFilter, sortColumn, sortDirection, dateFrom, dateTo]);
   const handlePageChange = (page) => {
     setCurrentPage(page);
   };
@@ -294,6 +319,11 @@ const columns = [
           onSearchChange={(e) => setSearchTerm(e.target.value)}
           searchPlaceholder="Search summaries, status..."
           filters={filters}
+          showDateFilter={true}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          dateMode={dateMode}
+          onDateRangeChange={handleDateRangeChange}
           showExport={true}
           showRefresh={true}
           showSearchButton={true}
