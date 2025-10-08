@@ -63,7 +63,7 @@ filters = [],
             </Button>
           )}
           
-          {showExport && (
+{showExport && (
             <Button
               variant="outline"
               size="default"
@@ -73,8 +73,6 @@ filters = [],
               Export
             </Button>
           )}
-          
-          {children}
         </div>
       </div>
     </div>
