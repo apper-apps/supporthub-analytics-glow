@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subMonths, subWeeks } from "date-fns";
 import ApperIcon from "@/components/ApperIcon";
 import Select from "@/components/atoms/Select";
@@ -7,35 +7,45 @@ import Button from "@/components/atoms/Button";
 
 const DateRangeFilter = ({ onChange, dateFrom, mode, onModeChange }) => {
   const [localMode, setLocalMode] = useState(mode || 'custom');
+  const [customDate, setCustomDate] = useState(dateFrom || '');
 
-  const handleModeChange = (newMode) => {
+  // Sync local mode with prop mode when it changes
+  useEffect(() => {
+    if (mode) {
+      setLocalMode(mode);
+    }
+  }, [mode]);
+
+const handleModeChange = (newMode) => {
     setLocalMode(newMode);
     if (onModeChange) onModeChange(newMode);
     // Clear dates when changing mode
     if (onChange) onChange(null, null);
   };
 
-const handleCustomDateChange = (value) => {
+  const handleCustomDateChange = (value) => {
     if (onChange) {
       onChange(value);
     }
   };
-
 const handleMonthSelect = (value) => {
     if (value && onChange) {
       const monthsAgo = parseInt(value);
       const targetDate = subMonths(new Date(), monthsAgo);
       const from = format(startOfMonth(targetDate), 'yyyy-MM-dd');
       setLocalMode('month'); // Maintain month mode after selection
+      if (onModeChange) onModeChange('month');
       onChange(from);
     }
   };
-const handleWeekSelect = (value) => {
+
+  const handleWeekSelect = (value) => {
     if (value && onChange) {
       const weeksAgo = parseInt(value);
       const targetDate = subWeeks(new Date(), weeksAgo);
       const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
       setLocalMode('week'); // Maintain week mode after selection
+      if (onModeChange) onModeChange('week');
       onChange(from);
     }
   };
@@ -95,7 +105,6 @@ const handleWeekSelect = (value) => {
           Week
         </button>
       </div>
-
 {localMode === 'custom' && (
         <>
           <Input
@@ -135,7 +144,6 @@ const handleWeekSelect = (value) => {
           ))}
         </Select>
       )}
-
 {dateFrom && (
         <Button
           variant="ghost"

@@ -1,20 +1,21 @@
+import "@/index.css";
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
-import DateRangeFilter from "@/components/atoms/DateRangeFilter";
-import "@/index.css";
-import userDetailsService from "@/services/api/userDetailsService";
-import appService from "@/services/api/appService";
+import App from "@/App";
 import ApperIcon from "@/components/ApperIcon";
 import FilterBar from "@/components/molecules/FilterBar";
 import StatusBadge from "@/components/molecules/StatusBadge";
-import DataTable from "@/components/organisms/DataTable";
-import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
+import Loading from "@/components/ui/Loading";
+import DataTable from "@/components/organisms/DataTable";
+import DateRangeFilter from "@/components/atoms/DateRangeFilter";
+import Select from "@/components/atoms/Select";
 import Badge from "@/components/atoms/Badge";
 import Button from "@/components/atoms/Button";
-import Select from "@/components/atoms/Select";
+import appService from "@/services/api/appService";
+import userDetailsService from "@/services/api/userDetailsService";
 const AppsOverview = () => {
 const navigate = useNavigate();
 const [apps, setApps] = useState([]);
@@ -181,9 +182,8 @@ if (dateFrom) {
           { "field": { "Name": "created_at" } },
           { "field": { "Name": "sales_status" } },
           { "field": { "Name": "user_id" } }
-        ],
-        "where": whereConditions,
-"where": whereConditions.length > 0 ? whereConditions : undefined,
+],
+        "where": whereConditions.length > 0 ? whereConditions : undefined,
         "whereGroups": searchGroups,
         "orderBy": sortColumn ? [{
           "fieldName": sortColumn,
@@ -251,8 +251,13 @@ const handleSearch = () => {
     fetchApps();
   };
 
-const handleDateChange = (date) => {
+const handleDateChange = (date, mode) => {
     setDateFrom(date);
+    if (mode) setDateFilterMode(mode);
+  };
+
+  const handleDateFilterModeChange = (newMode) => {
+    setDateFilterMode(newMode);
   };
 
   const handleRowClick = (app) => {
@@ -511,8 +516,6 @@ const filters = [
     }
   ];
 
-  if (loading) return <Loading type="table" />;
-  if (error) return <Error message={error} onRetry={fetchApps} />;
 if (loading) return <Loading type="table" />;
   if (error) return <Error message={error} onRetry={fetchApps} />;
 
@@ -523,7 +526,7 @@ return (
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4 }}
       >
-<FilterBar
+        <FilterBar
           searchValue={searchTerm}
           onSearchChange={(e) => setSearchTerm(e.target.value)}
           searchPlaceholder="Search apps..."
@@ -538,11 +541,16 @@ return (
             console.log("Export apps data");
           }}
         >
-<DateRangeFilter onChange={handleDateChange} dateFrom={dateFrom} />
+          <div className="flex items-center gap-3">
+            <DateRangeFilter 
+              onChange={handleDateChange} 
+              dateFrom={dateFrom} 
+              mode={dateFilterMode}
+              onModeChange={handleDateFilterModeChange}
+            />
+          </div>
         </FilterBar>
       </motion.div>
-
-      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.1 }}
@@ -763,9 +771,9 @@ return (
               )}
             </div>
           </motion.div>
-        </div>
-      )}
 </div>
+      )}
+    </div>
   );
 };
 
