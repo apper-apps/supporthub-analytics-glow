@@ -5,7 +5,7 @@ import Button from '@/components/atoms/Button';
 import Select from '@/components/atoms/Select';
 import ApperIcon from '@/components/ApperIcon';
 
-const DateRangeFilter = ({ onChange, dateFrom, dateTo, mode, onModeChange }) => {
+const DateRangeFilter = ({ onChange, dateFrom, mode, onModeChange }) => {
   const [localMode, setLocalMode] = useState(mode || 'custom');
 
   const handleModeChange = (newMode) => {
@@ -15,23 +15,18 @@ const DateRangeFilter = ({ onChange, dateFrom, dateTo, mode, onModeChange }) => 
     if (onChange) onChange(null, null);
   };
 
-  const handleCustomDateChange = (type, value) => {
+const handleCustomDateChange = (value) => {
     if (onChange) {
-      if (type === 'from') {
-        onChange(value, dateTo);
-      } else {
-        onChange(dateFrom, value);
-      }
+      onChange(value);
     }
   };
 
   const handleMonthSelect = (value) => {
     if (value && onChange) {
       const monthsAgo = parseInt(value);
-      const targetDate = subMonths(new Date(), monthsAgo);
+const targetDate = subMonths(new Date(), monthsAgo);
       const from = format(startOfMonth(targetDate), 'yyyy-MM-dd');
-      const to = format(endOfMonth(targetDate), 'yyyy-MM-dd');
-      onChange(from, to);
+      onChange(from);
     }
   };
 
@@ -39,9 +34,8 @@ const DateRangeFilter = ({ onChange, dateFrom, dateTo, mode, onModeChange }) => 
     if (value && onChange) {
       const weeksAgo = parseInt(value);
       const targetDate = subWeeks(new Date(), weeksAgo);
-      const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
-      const to = format(endOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
-      onChange(from, to);
+const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+      onChange(from);
     }
   };
 
@@ -103,21 +97,13 @@ const DateRangeFilter = ({ onChange, dateFrom, dateTo, mode, onModeChange }) => 
       </div>
 
       {localMode === 'custom' && (
-        <>
+<>
           <Input
             type="date"
             value={dateFrom || ''}
-            onChange={(e) => handleCustomDateChange('from', e.target.value)}
+            onChange={(e) => handleCustomDateChange(e.target.value)}
             className="w-40"
-            placeholder="From date"
-          />
-          <span className="text-gray-500">to</span>
-          <Input
-            type="date"
-            value={dateTo || ''}
-            onChange={(e) => handleCustomDateChange('to', e.target.value)}
-            className="w-40"
-            placeholder="To date"
+            placeholder="Select date"
           />
         </>
       )}
@@ -150,7 +136,7 @@ const DateRangeFilter = ({ onChange, dateFrom, dateTo, mode, onModeChange }) => 
         </Select>
       )}
 
-      {(dateFrom || dateTo) && (
+{dateFrom && (
         <Button
           variant="ghost"
           size="sm"

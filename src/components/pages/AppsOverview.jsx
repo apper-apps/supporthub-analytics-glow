@@ -25,7 +25,6 @@ const [searchTerm, setSearchTerm] = useState("");
 const [dbFilter, setDbFilter] = useState("");
   const [dateFilterMode, setDateFilterMode] = useState("custom");
   const [dateFrom, setDateFrom] = useState(null);
-  const [dateTo, setDateTo] = useState(null);
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [usersMap, setUsersMap] = useState({});
@@ -60,19 +59,17 @@ const fetchApps = async () => {
 const whereConditions = [];
 
       // Date range filter
-      if (dateFrom) {
+if (dateFrom) {
         whereConditions.push({
           FieldName: "last_message_at",
           Operator: "GreaterThanOrEqualTo",
           Values: [dateFrom + "T00:00:00"],
           Include: true
         });
-      }
-      if (dateTo) {
         whereConditions.push({
           FieldName: "last_message_at",
           Operator: "LessThanOrEqualTo",
-          Values: [dateTo + "T23:59:59"],
+          Values: [dateFrom + "T23:59:59"],
           Include: true
         });
       }
@@ -231,7 +228,7 @@ const whereConditions = [];
 
 useEffect(() => {
     fetchApps();
-  }, [currentPage, itemsPerPage, statusFilter, dbFilter, sortColumn, sortDirection, dateFrom, dateTo]);
+}, [currentPage, itemsPerPage, statusFilter, dbFilter, sortColumn, sortDirection, dateFrom]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -254,9 +251,8 @@ const handleSearch = () => {
     fetchApps();
   };
 
-  const handleDateChange = (from, to) => {
-    setDateFrom(from);
-    setDateTo(to);
+const handleDateChange = (date) => {
+    setDateFrom(date);
   };
 
   const handleRowClick = (app) => {
@@ -542,7 +538,7 @@ return (
             console.log("Export apps data");
           }}
         >
-          <DateRangeFilter onDateChange={handleDateChange} />
+<DateRangeFilter onChange={handleDateChange} dateFrom={dateFrom} />
         </FilterBar>
       </motion.div>
 
