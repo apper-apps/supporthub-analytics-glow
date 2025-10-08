@@ -6,8 +6,10 @@ import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 
 const DateRangeFilter = ({ onChange, dateFrom, mode, onModeChange }) => {
-  const [localMode, setLocalMode] = useState(mode || 'custom');
+const [localMode, setLocalMode] = useState(mode || 'custom');
   const [customDate, setCustomDate] = useState(dateFrom || '');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedWeek, setSelectedWeek] = useState('');
 
   // Sync local mode with prop mode when it changes
   useEffect(() => {
@@ -30,6 +32,8 @@ const handleModeChange = (newMode) => {
   };
 const handleMonthSelect = (value) => {
     if (value && onChange) {
+      setSelectedMonth(value);
+      setSelectedWeek(''); // Clear week selection when month is selected
       const monthsAgo = parseInt(value);
       const targetDate = subMonths(new Date(), monthsAgo);
       const from = format(startOfMonth(targetDate), 'yyyy-MM-dd');
@@ -39,8 +43,10 @@ const handleMonthSelect = (value) => {
     }
   };
 
-  const handleWeekSelect = (value) => {
+const handleWeekSelect = (value) => {
     if (value && onChange) {
+      setSelectedWeek(value);
+      setSelectedMonth(''); // Clear month selection when week is selected
       const weeksAgo = parseInt(value);
       const targetDate = subWeeks(new Date(), weeksAgo);
       const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
@@ -118,7 +124,8 @@ const handleMonthSelect = (value) => {
       )}
 
       {localMode === 'month' && (
-        <Select
+<Select
+          value={selectedMonth}
           onChange={(e) => handleMonthSelect(e.target.value)}
           className="min-w-[180px]"
         >
@@ -131,8 +138,9 @@ const handleMonthSelect = (value) => {
         </Select>
       )}
 
-      {localMode === 'week' && (
+{localMode === 'week' && (
         <Select
+          value={selectedWeek}
           onChange={(e) => handleWeekSelect(e.target.value)}
           className="min-w-[200px]"
         >
