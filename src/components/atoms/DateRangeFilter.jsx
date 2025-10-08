@@ -6,10 +6,8 @@ import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 
 const DateRangeFilter = ({ onChange, dateFrom, mode, onModeChange }) => {
-const [localMode, setLocalMode] = useState(mode || 'custom');
+  const [localMode, setLocalMode] = useState(mode || 'custom');
   const [customDate, setCustomDate] = useState(dateFrom || '');
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedWeek, setSelectedWeek] = useState('');
 
   // Sync local mode with prop mode when it changes
   useEffect(() => {
@@ -35,19 +33,17 @@ const handleMonthSelect = (value) => {
       const monthsAgo = parseInt(value);
       const targetDate = subMonths(new Date(), monthsAgo);
       const from = format(startOfMonth(targetDate), 'yyyy-MM-dd');
-      setSelectedMonth(value);
       setLocalMode('month'); // Maintain month mode after selection
       if (onModeChange) onModeChange('month');
       onChange(from);
     }
   };
 
-const handleWeekSelect = (value) => {
+  const handleWeekSelect = (value) => {
     if (value && onChange) {
       const weeksAgo = parseInt(value);
       const targetDate = subWeeks(new Date(), weeksAgo);
       const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
-      setSelectedWeek(value);
       setLocalMode('week'); // Maintain week mode after selection
       if (onModeChange) onModeChange('week');
       onChange(from);
@@ -122,8 +118,7 @@ const handleWeekSelect = (value) => {
       )}
 
       {localMode === 'month' && (
-<Select
-          value={selectedMonth}
+        <Select
           onChange={(e) => handleMonthSelect(e.target.value)}
           className="min-w-[180px]"
         >
@@ -137,8 +132,7 @@ const handleWeekSelect = (value) => {
       )}
 
       {localMode === 'week' && (
-<Select
-          value={selectedWeek}
+        <Select
           onChange={(e) => handleWeekSelect(e.target.value)}
           className="min-w-[200px]"
         >
