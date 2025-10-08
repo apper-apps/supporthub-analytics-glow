@@ -7,7 +7,7 @@ const FilterBar = ({
   searchValue,
   onSearchChange,
   searchPlaceholder = "Search...",
-  filters = [],
+filters = [],
   showExport = false,
   onExport,
   showRefresh = false,
@@ -31,7 +31,7 @@ const FilterBar = ({
             onKeyDown={onKeyDown}
           />
           
-          <div className="flex gap-3">
+<div className="flex gap-3">
             {filters.map((filter, index) => (
               <Select
                 key={index}
@@ -47,6 +47,7 @@ const FilterBar = ({
                 ))}
               </Select>
             ))}
+            {children}
           </div>
         </div>
         

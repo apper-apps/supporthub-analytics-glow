@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { format } from "date-fns";
+import DateRangeFilter from "@/components/atoms/DateRangeFilter";
 import "@/index.css";
 import userDetailsService from "@/services/api/userDetailsService";
 import appService from "@/services/api/appService";
@@ -21,7 +22,10 @@ const [apps, setApps] = useState([]);
   const [error, setError] = useState("");
 const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
-  const [dbFilter, setDbFilter] = useState("");
+const [dbFilter, setDbFilter] = useState("");
+  const [dateFilterMode, setDateFilterMode] = useState("custom");
+  const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [usersMap, setUsersMap] = useState({});
@@ -53,7 +57,25 @@ const fetchApps = async () => {
       });
 
       // Build where conditions based on filters
-      const whereConditions = [];
+const whereConditions = [];
+
+      // Date range filter
+      if (dateFrom) {
+        whereConditions.push({
+          FieldName: "last_message_at",
+          Operator: "GreaterThanOrEqualTo",
+          Values: [dateFrom + "T00:00:00"],
+          Include: true
+        });
+      }
+      if (dateTo) {
+        whereConditions.push({
+          FieldName: "last_message_at",
+          Operator: "LessThanOrEqualTo",
+          Values: [dateTo + "T23:59:59"],
+          Include: true
+        });
+      }
       
       // Enhanced search: search by app name OR user email
       // For email search, we need to first find users with matching emails, then search apps by those user IDs
@@ -164,6 +186,7 @@ const fetchApps = async () => {
           { "field": { "Name": "user_id" } }
         ],
         "where": whereConditions,
+"where": whereConditions.length > 0 ? whereConditions : undefined,
         "whereGroups": searchGroups,
         "orderBy": sortColumn ? [{
           "fieldName": sortColumn,
@@ -208,7 +231,7 @@ const fetchApps = async () => {
 
 useEffect(() => {
     fetchApps();
-  }, [currentPage, itemsPerPage, statusFilter, dbFilter, sortColumn, sortDirection]);
+  }, [currentPage, itemsPerPage, statusFilter, dbFilter, sortColumn, sortDirection, dateFrom, dateTo]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -229,6 +252,11 @@ useEffect(() => {
 };
 const handleSearch = () => {
     fetchApps();
+  };
+
+  const handleDateChange = (from, to) => {
+    setDateFrom(from);
+    setDateTo(to);
   };
 
   const handleRowClick = (app) => {
@@ -469,7 +497,6 @@ const actions = [
       onClick: handleViewDetails
     }
   ];
-
 const filters = [
     {
       placeholder: "All Statuses",
@@ -489,6 +516,8 @@ const filters = [
   ];
 
   if (loading) return <Loading type="table" />;
+  if (error) return <Error message={error} onRetry={fetchApps} />;
+if (loading) return <Loading type="table" />;
   if (error) return <Error message={error} onRetry={fetchApps} />;
 
 return (
