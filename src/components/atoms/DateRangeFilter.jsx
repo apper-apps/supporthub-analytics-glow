@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { format, subMonths, startOfWeek, endOfWeek, subWeeks, startOfMonth, endOfMonth } from 'date-fns';
-import Input from '@/components/atoms/Input';
-import Button from '@/components/atoms/Button';
-import Select from '@/components/atoms/Select';
-import ApperIcon from '@/components/ApperIcon';
+import React, { useState } from "react";
+import { endOfMonth, endOfWeek, format, startOfMonth, startOfWeek, subMonths, subWeeks } from "date-fns";
+import ApperIcon from "@/components/ApperIcon";
+import Select from "@/components/atoms/Select";
+import Input from "@/components/atoms/Input";
+import Button from "@/components/atoms/Button";
 
 const DateRangeFilter = ({ onChange, dateFrom, mode, onModeChange }) => {
   const [localMode, setLocalMode] = useState(mode || 'custom');
@@ -21,24 +21,24 @@ const handleCustomDateChange = (value) => {
     }
   };
 
-  const handleMonthSelect = (value) => {
+const handleMonthSelect = (value) => {
     if (value && onChange) {
       const monthsAgo = parseInt(value);
-const targetDate = subMonths(new Date(), monthsAgo);
+      const targetDate = subMonths(new Date(), monthsAgo);
       const from = format(startOfMonth(targetDate), 'yyyy-MM-dd');
+      setLocalMode('month'); // Maintain month mode after selection
       onChange(from);
     }
   };
-
-  const handleWeekSelect = (value) => {
+const handleWeekSelect = (value) => {
     if (value && onChange) {
       const weeksAgo = parseInt(value);
       const targetDate = subWeeks(new Date(), weeksAgo);
-const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+      const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+      setLocalMode('week'); // Maintain week mode after selection
       onChange(from);
     }
   };
-
   const handleClear = () => {
     if (onChange) onChange(null, null);
   };
@@ -96,8 +96,8 @@ const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
         </button>
       </div>
 
-      {localMode === 'custom' && (
-<>
+{localMode === 'custom' && (
+        <>
           <Input
             type="date"
             value={dateFrom || ''}
