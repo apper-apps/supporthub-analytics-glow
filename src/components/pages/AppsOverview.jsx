@@ -541,7 +541,9 @@ return (
             // Export functionality
             console.log("Export apps data");
           }}
-        />
+        >
+          <DateRangeFilter onDateChange={handleDateChange} />
+        </FilterBar>
       </motion.div>
 
       <motion.div
