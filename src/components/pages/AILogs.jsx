@@ -24,8 +24,8 @@ const AILogs = () => {
   // Pagination state
 const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
-  const [dateFrom, setDateFrom] = useState(null);
-const [dateTo, setDateTo] = useState(null);
+const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
   const [dateMode, setDateMode] = useState('');
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedWeek, setSelectedWeek] = useState('');

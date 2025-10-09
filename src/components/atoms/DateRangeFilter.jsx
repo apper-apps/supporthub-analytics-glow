@@ -41,9 +41,10 @@ const handleMonthSelect = (value) => {
       const monthsAgo = parseInt(value);
       const targetDate = subMonths(new Date(), monthsAgo);
       const from = format(startOfMonth(targetDate), 'yyyy-MM-dd');
+      const to = format(endOfMonth(targetDate), 'yyyy-MM-dd');
       setLocalMode('month'); // Maintain month mode after selection
       if (onModeChange) onModeChange('month');
-      onChange(from, null, value, ''); // Pass selectedMonth and selectedWeek to parent
+      onChange(from, to, value, ''); // Pass selectedMonth and selectedWeek to parent
     }
   };
 

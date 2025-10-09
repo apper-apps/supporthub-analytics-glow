@@ -26,6 +26,7 @@ const [searchTerm, setSearchTerm] = useState("");
 const [dbFilter, setDbFilter] = useState("");
   const [dateFilterMode, setDateFilterMode] = useState("custom");
 const [dateFrom, setDateFrom] = useState(null);
+  const [dateTo, setDateTo] = useState(null);
   const [selectedMonth, setSelectedMonth] = useState('');
   const [selectedWeek, setSelectedWeek] = useState('');
   const [sortColumn, setSortColumn] = useState("");
@@ -69,10 +70,11 @@ if (dateFrom) {
           Values: [dateFrom + "T00:00:00"],
           Include: true
         });
+        const endDate = dateTo || dateFrom;
         whereConditions.push({
           FieldName: "last_message_at",
           Operator: "LessThanOrEqualTo",
-          Values: [dateFrom + "T23:59:59"],
+          Values: [endDate + "T23:59:59"],
           Include: true
         });
       }
@@ -255,6 +257,7 @@ const handleSearch = () => {
 
 const handleDateChange = (date, to, month, week) => {
     setDateFrom(date);
+    setDateTo(to);
     setSelectedMonth(month || '');
     setSelectedWeek(week || '');
   };
