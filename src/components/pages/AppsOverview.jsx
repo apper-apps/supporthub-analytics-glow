@@ -25,7 +25,9 @@ const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
 const [dbFilter, setDbFilter] = useState("");
   const [dateFilterMode, setDateFilterMode] = useState("custom");
-  const [dateFrom, setDateFrom] = useState(null);
+const [dateFrom, setDateFrom] = useState(null);
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedWeek, setSelectedWeek] = useState('');
   const [sortColumn, setSortColumn] = useState("");
   const [sortDirection, setSortDirection] = useState("asc");
   const [usersMap, setUsersMap] = useState({});
@@ -251,9 +253,10 @@ const handleSearch = () => {
     fetchApps();
   };
 
-const handleDateChange = (date, mode) => {
+const handleDateChange = (date, to, month, week) => {
     setDateFrom(date);
-    if (mode) setDateFilterMode(mode);
+    setSelectedMonth(month || '');
+    setSelectedWeek(week || '');
   };
 
   const handleDateFilterModeChange = (newMode) => {
@@ -543,10 +546,12 @@ return (
         >
           <div className="flex items-center gap-3">
             <DateRangeFilter 
-              onChange={handleDateChange} 
+onChange={handleDateChange} 
               dateFrom={dateFrom} 
               mode={dateFilterMode}
               onModeChange={handleDateFilterModeChange}
+              selectedMonth={selectedMonth}
+              selectedWeek={selectedWeek}
             />
           </div>
 </FilterBar>

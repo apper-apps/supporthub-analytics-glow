@@ -25,8 +25,10 @@ const AILogs = () => {
 const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(20);
   const [dateFrom, setDateFrom] = useState(null);
-  const [dateTo, setDateTo] = useState(null);
+const [dateTo, setDateTo] = useState(null);
   const [dateMode, setDateMode] = useState('');
+  const [selectedMonth, setSelectedMonth] = useState('');
+  const [selectedWeek, setSelectedWeek] = useState('');
   const [totalPages, setTotalPages] = useState(0);
   const [totalItems, setTotalItems] = useState(0);
   // Modal state
@@ -144,10 +146,11 @@ const handleSearch = () => {
     fetchData();
   };
 
-  const handleDateRangeChange = (from, to, mode) => {
+const handleDateRangeChange = (from, to, month, week) => {
     setDateFrom(from);
     setDateTo(to);
-    setDateMode(mode);
+    setSelectedMonth(month || '');
+    setSelectedWeek(week || '');
     setCurrentPage(1); // Reset to first page when date range changes
   };
 
@@ -321,9 +324,11 @@ const columns = [
           filters={filters}
           showDateFilter={true}
           dateFrom={dateFrom}
-          dateTo={dateTo}
+dateTo={dateTo}
           dateMode={dateMode}
           onDateRangeChange={handleDateRangeChange}
+          selectedMonth={selectedMonth}
+          selectedWeek={selectedWeek}
           showExport={true}
           showRefresh={true}
           showSearchButton={true}

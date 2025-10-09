@@ -5,11 +5,15 @@ import Select from "@/components/atoms/Select";
 import Input from "@/components/atoms/Input";
 import Button from "@/components/atoms/Button";
 
-const DateRangeFilter = ({ onChange, dateFrom, mode, onModeChange }) => {
+const DateRangeFilter = ({ onChange, dateFrom, mode, onModeChange, selectedMonth: propSelectedMonth, selectedWeek: propSelectedWeek }) => {
 const [localMode, setLocalMode] = useState(mode || 'custom');
   const [customDate, setCustomDate] = useState(dateFrom || '');
-  const [selectedMonth, setSelectedMonth] = useState('');
-  const [selectedWeek, setSelectedWeek] = useState('');
+  const [localSelectedMonth, setLocalSelectedMonth] = useState('');
+  const [localSelectedWeek, setLocalSelectedWeek] = useState('');
+  
+  // Use prop values if provided, otherwise use local state
+  const selectedMonth = propSelectedMonth !== undefined ? propSelectedMonth : localSelectedMonth;
+  const selectedWeek = propSelectedWeek !== undefined ? propSelectedWeek : localSelectedWeek;
 
   // Sync local mode with prop mode when it changes
   useEffect(() => {
@@ -32,27 +36,27 @@ const handleModeChange = (newMode) => {
   };
 const handleMonthSelect = (value) => {
     if (value && onChange) {
-      setSelectedMonth(value);
-      setSelectedWeek(''); // Clear week selection when month is selected
+      setLocalSelectedMonth(value);
+      setLocalSelectedWeek(''); // Clear week selection when month is selected
       const monthsAgo = parseInt(value);
       const targetDate = subMonths(new Date(), monthsAgo);
       const from = format(startOfMonth(targetDate), 'yyyy-MM-dd');
       setLocalMode('month'); // Maintain month mode after selection
       if (onModeChange) onModeChange('month');
-      onChange(from);
+      onChange(from, null, value, ''); // Pass selectedMonth and selectedWeek to parent
     }
   };
 
 const handleWeekSelect = (value) => {
-    if (value && onChange) {
-      setSelectedWeek(value);
-      setSelectedMonth(''); // Clear month selection when week is selected
+if (value && onChange) {
+      setLocalSelectedWeek(value);
+      setLocalSelectedMonth(''); // Clear month selection when week is selected
       const weeksAgo = parseInt(value);
       const targetDate = subWeeks(new Date(), weeksAgo);
       const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
       setLocalMode('week'); // Maintain week mode after selection
       if (onModeChange) onModeChange('week');
-      onChange(from);
+      onChange(from, null, '', value); // Pass selectedMonth and selectedWeek to parent
     }
   };
   const handleClear = () => {
