@@ -129,11 +129,11 @@ if (value && onChange) {
 
       {localMode === 'month' && (
 <Select
-          value={selectedMonth}
+value={selectedMonth}
           onChange={(e) => handleMonthSelect(e.target.value)}
           className="min-w-[180px]"
         >
-          <option value="">{selectedMonth}</option>
+          <option value="">{selectedMonth || 'Select Month'}</option>
           {monthOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -143,12 +143,12 @@ if (value && onChange) {
       )}
 
 {localMode === 'week' && (
-        <Select
+<Select
           value={selectedWeek}
           onChange={(e) => handleWeekSelect(e.target.value)}
           className="min-w-[200px]"
         >
-          <option value="">{selectedWeek}</option>
+          <option value="">{selectedWeek || 'Select Week'}</option>
           {weekOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
