@@ -232,7 +232,7 @@ if (dateFrom) {
 
 useEffect(() => {
     fetchApps();
-}, [currentPage, itemsPerPage, statusFilter, dbFilter, sortColumn, sortDirection, dateFrom]);
+}, [currentPage, itemsPerPage, statusFilter, dbFilter, sortColumn, sortDirection, dateFrom, dateTo]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
