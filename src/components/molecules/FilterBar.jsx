@@ -32,8 +32,6 @@ filters = [],
           />
           
           <div className="flex gap-3">
-            <>
-              <pre>{JSON.stringify(filters, null, 2)}</pre>
             {filters.map((filter, index) => (
               <Select
                 key={index}
@@ -50,7 +48,6 @@ filters = [],
               </Select>
             ))}
             {children}
-            </>
           </div>
         </div>
         
