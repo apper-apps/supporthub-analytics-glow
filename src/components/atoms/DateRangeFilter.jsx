@@ -55,9 +55,10 @@ if (value && onChange) {
       const weeksAgo = parseInt(value);
       const targetDate = subWeeks(new Date(), weeksAgo);
       const from = format(startOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
+      const to = format(endOfWeek(targetDate, { weekStartsOn: 1 }), 'yyyy-MM-dd');
       setLocalMode('week'); // Maintain week mode after selection
       if (onModeChange) onModeChange('week');
-      onChange(from, null, '', value); // Pass selectedMonth and selectedWeek to parent
+      onChange(from, to, '', value); // Pass selectedMonth and selectedWeek to parent
     }
   };
   const handleClear = () => {
