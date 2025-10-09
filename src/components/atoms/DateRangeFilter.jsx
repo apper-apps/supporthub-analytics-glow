@@ -129,7 +129,7 @@ const handleWeekSelect = (value) => {
           onChange={(e) => handleMonthSelect(e.target.value)}
           className="min-w-[180px]"
         >
-          <option value="">Select month</option>
+          <option value="">{selectedMonth}</option>
           {monthOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
@@ -144,7 +144,7 @@ const handleWeekSelect = (value) => {
           onChange={(e) => handleWeekSelect(e.target.value)}
           className="min-w-[200px]"
         >
-          <option value="">Select week</option>
+          <option value="">{selectedWeek}</option>
           {weekOptions.map((option) => (
             <option key={option.value} value={option.value}>
               {option.label}
